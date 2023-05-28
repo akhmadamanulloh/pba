@@ -104,7 +104,7 @@ def main():
         delete_sentiment_model()
 
     # Tombol untuk melatih model
-    if st.button('Latih Model'):
+    if st.button('Latih Model') or not os.path.exists('sentiment_model.pkl'):
         train_model()
 
     # Memuat model dari file pickle
