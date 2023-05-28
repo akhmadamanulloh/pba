@@ -35,12 +35,16 @@ def preprocess_text(text):
 
     return ' '.join(tokens)
 
-# Fungsi untuk mendapatkan sentimen menggunakan Naive Bayes
+# Fungsi untuk mendapatkan sentimen menggunakan TextBlob
 def get_sentiment(text):
-    preprocessed_text = preprocess_text(text)
-    X = vectorizer.transform([preprocessed_text])
-    predicted_sentiment = model.predict(X)[0]
-    return predicted_sentiment
+    blob = TextBlob(text)
+    sentiment = blob.sentiment.polarity
+    if sentiment > 0:
+        return 'Positif'
+    elif sentiment < 0:
+        return 'Negatif'
+    else:
+        return 'Netral'
 
 # Fungsi untuk menghapus file pkl sentimen sebelumnya
 def delete_sentiment_model():
@@ -58,9 +62,6 @@ def train_model():
 
     # Preprocessing teks
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
-
-    # Mendapatkan sentimen
-    df['sentiment'] = df['Preprocessed_Text'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
@@ -120,7 +121,12 @@ def main():
     if st.button('Analisis', disabled=model is None or vectorizer is None):
         if model is not None and vectorizer is not None:
             sentiment = get_sentiment(review_text)
-            st.write('Sentimen Prediksi:', sentiment)
+            st.write('Sentimen Asli:', sentiment)
+            
+            preprocessed_text = preprocess_text(review_text)
+            X = vectorizer.transform([preprocessed_text])
+            predicted_sentiment = model.predict(X)[0]
+            st.write('Sentimen Prediksi:', predicted_sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
 
