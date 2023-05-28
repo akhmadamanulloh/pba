@@ -92,7 +92,7 @@ def main():
         vectorizer = None
 
     # Tombol untuk melatih model
-    if st.button('Latih Model') and not model_trained:
+    if not model_trained and st.button('Latih Model'):
         train_model()
         model_trained = True
 
