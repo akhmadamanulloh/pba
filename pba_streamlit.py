@@ -26,6 +26,17 @@ def preprocess_text(text):
 
     return ' '.join(tokens)
 
+# Fungsi untuk mendapatkan sentimen menggunakan TextBlob
+def get_sentiment(text):
+    blob = TextBlob(text)
+    sentiment = blob.sentiment.polarity
+    if sentiment > 0:
+        return 'Positif'
+    elif sentiment < 0:
+        return 'Negatif'
+    else:
+        return 'Netral'
+
 # Fungsi untuk melatih model Naive Bayes dan menyimpannya ke dalam file pickle
 def train_model():
     # Baca data CSV
@@ -33,6 +44,9 @@ def train_model():
 
     # Preprocessing teks
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
+
+    # Mendapatkan sentimen
+    df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
@@ -55,31 +69,6 @@ def train_model():
         pickle.dump(vectorizer, f)
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
-
-# Fungsi untuk menganalisis sentimen menggunakan model Naive Bayes
-def analyze_sentiment(text, model, vectorizer):
-    # Preprocessing teks
-    preprocessed_text = preprocess_text(text)
-
-    # Melakukan vektorisasi teks menggunakan TF-IDF
-    text_vectorized = vectorizer.transform([preprocessed_text])
-
-    # Memprediksi sentimen
-    sentiment = model.predict(text_vectorized)[0]
-
-    # Polarity check menggunakan TextBlob
-    polarity = TextBlob(text).sentiment.polarity
-
-    return sentiment, polarity
-
-# Fungsi untuk mengklasifikasikan polarity berdasarkan nilai polaritas
-def classify_polarity(polarity):
-    if polarity < 0:
-        return 'Negatif'
-    elif polarity == 0:
-        return 'Netral'
-    else:
-        return 'Positif'
 
 # Fungsi utama Streamlit
 def main():
