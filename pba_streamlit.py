@@ -89,6 +89,8 @@ except FileNotFoundError:
 
 # Fungsi utama Streamlit
 def main():
+    global model_trained
+    
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
 
     # Tombol untuk melatih model
