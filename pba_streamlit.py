@@ -68,12 +68,19 @@ def train_model():
     y = df['sentiment']
 
     # Melakukan vektorisasi teks menggunakan TF-IDF
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+    # Membuat objek TfidfVectorizer untuk melakukan ekstraksi fitur menggunakan metode TF-IDF
     vectorizer = TfidfVectorizer()
-    X = vectorizer.fit_transform(X)
+
+    # Melakukan ekstraksi fitur TF-IDF pada data latih dan data uji
+    X_train_tfidf = vectorizer.fit_transform(X_train)
+    X_test_tfidf = vectorizer.transform(X_test)
 
     # Melatih model Naive Bayes
     model = MultinomialNB()
-    model.fit(X, y)
+    # Melatih model menggunakan data latih yang telah diekstraksi fitur dengan metode TF-IDF.
+    model.fit(X_train_tfidf, y_train)
 
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
