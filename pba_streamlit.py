@@ -104,7 +104,7 @@ def main():
         delete_sentiment_model()
 
     # Tombol untuk melatih model
-    if st.button('Latih Model') or not os.path.exists('sentiment_model.pkl'):
+    if st.button('Latih Model'):
         train_model()
 
     # Memuat model dari file pickle
@@ -117,9 +117,7 @@ def main():
     # Tombol untuk menganalisis sentimen
     if st.button('Analisis', disabled=model is None or vectorizer is None):
         if model is not None and vectorizer is not None:
-            preprocessed_text = preprocess_text(review_text)
-            X = vectorizer.transform([preprocessed_text])
-            sentiment = model.predict(X)[0]
+            sentiment = get_sentiment(review_text)
             st.write('Sentimen:', sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
