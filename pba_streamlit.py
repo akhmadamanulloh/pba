@@ -56,9 +56,18 @@ def train_model():
     vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(X)
 
+    # Memisahkan data menjadi data pelatihan dan data pengujian
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
     # Melatih model Naive Bayes
     model = MultinomialNB()
-    model.fit(X, y)
+    model.fit(X_train, y_train)
+
+    # Memprediksi label untuk data pengujian
+    y_pred = model.predict(X_test)
+
+    # Menghitung akurasi model
+    accuracy = accuracy_score(y_test, y_pred)
 
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
@@ -69,6 +78,8 @@ def train_model():
         pickle.dump(vectorizer, f)
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
+    st.write('Akurasi Model:', accuracy)
+    
 # Fungsi untuk menganalisis sentimen menggunakan model Naive Bayes
 def analyze_sentiment(text, model, vectorizer):
     # Preprocessing teks
