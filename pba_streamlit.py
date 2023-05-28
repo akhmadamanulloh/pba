@@ -117,10 +117,13 @@ def main():
     # Tombol untuk menganalisis sentimen
     if st.button('Analisis', disabled=model is None or vectorizer is None):
         if model is not None and vectorizer is not None:
+            sentiment = get_sentiment(review_text)
+            st.write('Sentimen Asli:', sentiment)
+            
             preprocessed_text = preprocess_text(review_text)
             X = vectorizer.transform([preprocessed_text])
-            sentiment = model.predict(X)[0]
-            st.write('Sentimen:', sentiment)
+            predicted_sentiment = model.predict(X)[0]
+            st.write('Sentimen Prediksi:', predicted_sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
 
