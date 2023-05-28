@@ -96,7 +96,7 @@ def main():
     review_text = st.text_input('Masukkan teks untuk analisis sentimen')
 
     # Tombol untuk menganalisis sentimen
-    if st.button('Analisis Sentimen'):
+    if st.button('Analisis Sentimen', disabled=model is None or vectorizer is None):
         if model is not None and vectorizer is not None:
             sentiment = model.predict(vectorizer.transform([review_text]))[0]
             st.write('Sentimen:', sentiment)
