@@ -81,7 +81,7 @@ def train_model():
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
     st.write('Akurasi Model:', accuracy)
-    
+
 # Fungsi untuk menganalisis sentimen menggunakan model Naive Bayes
 def analyze_sentiment(text, model, vectorizer):
     # Preprocessing teks
@@ -93,19 +93,11 @@ def analyze_sentiment(text, model, vectorizer):
     # Memprediksi sentimen
     sentiment = model.predict(text_vectorized)[0]
 
-    # Polarity check menggunakan TextBlob
-    polarity = TextBlob(text).sentiment.polarity
+    # Mendapatkan polaritas menggunakan TextBlob
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
 
     return sentiment, polarity
-
-# Fungsi untuk mengklasifikasikan polarity berdasarkan nilai polaritas
-def classify_polarity(polarity):
-    if polarity < 0:
-        return 'Negatif'
-    elif polarity == 0:
-        return 'Netral'
-    else:
-        return 'Positif'
 
 # Fungsi utama Streamlit
 def main():
@@ -116,16 +108,12 @@ def main():
         train_model()
 
     # Memuat model dari file pickle
-    try:
-        with open('sentiment_model.pkl', 'rb') as f:
-            model = pickle.load(f)
+    with open('sentiment_model.pkl', 'rb') as f:
+        model = pickle.load(f)
 
-        # Memuat vectorizer dari file pickle
-        with open('vectorizer.pkl', 'rb') as f:
-            vectorizer = pickle.load(f)
-    except FileNotFoundError:
-        model = None
-        vectorizer = None
+    # Memuat vectorizer dari file pickle
+    with open('vectorizer.pkl', 'rb') as f:
+        vectorizer = pickle.load(f)
 
     # Kolom input teks untuk analisis sentimen
     st.subheader('Analisis Sentimen')
