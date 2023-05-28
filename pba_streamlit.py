@@ -107,6 +107,9 @@ def main():
     if st.button('Hapus Model'):
         delete_sentiment_model()
 
+    # Memuat model dari file pickle
+    model, vectorizer = load_model()
+
     # Kolom input teks untuk analisis sentimen
     st.subheader('Analisis Sentimen')
     review_text = st.text_input('Masukkan tweet tentang waralaba')
