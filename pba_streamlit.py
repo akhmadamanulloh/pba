@@ -39,6 +39,17 @@ def preprocess_text(text):
 
     return ' '.join(tokens)
 
+# Fungsi untuk mendapatkan sentimen menggunakan TextBlob
+def get_sentiment(text):
+    blob = TextBlob(text)
+    sentiment = blob.sentiment.polarity
+    if sentiment > 0:
+        return 'Positif'
+    elif sentiment < 0:
+        return 'Negatif'
+    else:
+        return 'Netral'
+
 # Fungsi untuk melatih model Naive Bayes dan menyimpannya ke dalam file pickle
 def train_model():
     # Baca data CSV
@@ -46,6 +57,9 @@ def train_model():
 
     # Preprocessing teks
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
+
+    # Mendapatkan sentimen
+    df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
@@ -69,31 +83,6 @@ def train_model():
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
-# Fungsi untuk menganalisis sentimen menggunakan model Naive Bayes
-def analyze_sentiment(text, model, vectorizer):
-    # Preprocessing teks
-    preprocessed_text = preprocess_text(text)
-
-    # Melakukan vektorisasi teks menggunakan TF-IDF
-    text_vectorized = vectorizer.transform([preprocessed_text])
-
-    # Memprediksi sentimen
-    sentiment = model.predict(text_vectorized)[0]
-
-    # Polarity check menggunakan TextBlob
-    polarity = TextBlob(text).sentiment.polarity
-
-    return sentiment, polarity
-
-# Fungsi untuk mengklasifikasikan polarity berdasarkan nilai polaritas
-def classify_polarity(polarity):
-    if polarity < 0:
-        return 'Negatif'
-    elif polarity == 0:
-        return 'Netral'
-    else:
-        return 'Positif'
-
 # Fungsi utama Streamlit
 def main():
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
@@ -106,29 +95,25 @@ def main():
     try:
         with open('sentiment_model.pkl', 'rb') as f:
             model = pickle.load(f)
-    except FileNotFoundError:
-        model = None
 
-    # Memuat vectorizer dari file pickle
-    try:
+        # Memuat vectorizer dari file pickle
         with open('vectorizer.pkl', 'rb') as f:
             vectorizer = pickle.load(f)
     except FileNotFoundError:
+        model = None
         vectorizer = None
 
-    # Input teks untuk analisis sentimen
-    review_text = st.text_input('Masukkan teks untuk analisis sentimen')
+    # Kolom input teks untuk analisis sentimen
+    st.subheader('Analisis Sentimen')
+    review_text = st.text_input('Masukkan tweet tentang waralaba')
 
-    # Tombol untuk menganalisis sentimen
-    if st.button('Analisis Sentimen'):
-        if model is not None and vectorizer is not None:
+    if review_text and model and vectorizer:
+        # Tombol untuk menganalisis sentimen
+        if st.button('Analisis'):
             sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
             polarity_label = classify_polarity(polarity)
-
             st.write('Sentimen:', sentiment)
-            st.write('Polaritas:', polarity_label)
-        else:
-            st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
+            st.write('Polarity:', polarity_label)
 
 if __name__ == '__main__':
     main()
