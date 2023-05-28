@@ -8,7 +8,7 @@ from nltk.stem import PorterStemmer
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-
+nltk.download('punkt')
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
     # Case folding
