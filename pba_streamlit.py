@@ -127,7 +127,7 @@ def main():
             st.write('Sentimen Prediksi:', predicted_sentiment)
             
             # Memuat data validasi
-            validation_df = pd.read_csv('validation_tweet.csv')
+            validation_df = pd.read_csv('data_tweet.csv')
             validation_X = validation_df['Preprocessed_Text']
             validation_y = validation_df['sentiment']
 
