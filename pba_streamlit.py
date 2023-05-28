@@ -71,16 +71,16 @@ with open('sentiment_model.pickle', 'wb') as file:
 # Implementasi aplikasi Streamlit
 st.title("Analisis Sentimen Waralaba")
 text_input = st.text_input("Masukkan teks ulasan:")
-if st.button("Prediksi Sentimen"):
-    if text_input:
-        preprocessed_text = preprocess_text(text_input)
-        text_vectorized = vectorizer.transform([preprocessed_text])
-        sentiment = model.predict(text_vectorized)[0]
-        st.write("Sentimen: ", sentiment)
-    else:
-        st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
-
 if st.button("Memanggil File Pickle"):
     with open('sentiment_model.pickle', 'rb') as file:
         loaded_model = pickle.load(file)
     st.write("Model Sentimen dari File Pickle: ", loaded_model)
+
+if st.button("Prediksi Sentimen"):
+    if text_input:
+        preprocessed_text = preprocess_text(text_input)
+        text_vectorized = vectorizer.transform([preprocessed_text])
+        sentiment = loaded_model.predict(text_vectorized)[0]
+        st.write("Sentimen: ", sentiment)
+    else:
+        st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
