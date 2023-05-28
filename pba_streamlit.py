@@ -8,7 +8,6 @@ from nltk.stem import PorterStemmer
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score
 import os
 
 nltk.download('punkt')
@@ -118,29 +117,10 @@ def main():
     # Tombol untuk menganalisis sentimen
     if st.button('Analisis', disabled=model is None or vectorizer is None):
         if model is not None and vectorizer is not None:
-            sentiment = get_sentiment(review_text)
-            st.write('Sentimen:', sentiment)
-            
             preprocessed_text = preprocess_text(review_text)
             X = vectorizer.transform([preprocessed_text])
-            predicted_sentiment = model.predict(X)[0]
-            st.write('Sentimen Prediksi:', predicted_sentiment)
-            
-            # Memuat data validasi
-            validation_df = pd.read_csv('data_tweet.csv')
-            validation_X = validation_df['Preprocessed_Text']
-            validation_y = validation_df['sentiment']
-
-            # Transformasi teks menggunakan vectorizer
-            validation_X = vectorizer.transform(validation_X)
-
-            # Melakukan prediksi pada data validasi
-            predicted_validation_y = model.predict(validation_X)
-
-            # Menghitung akurasi
-            accuracy = accuracy_score(validation_y, predicted_validation_y)
-
-            st.write('Akurasi Model:', accuracy)
+            sentiment = model.predict(X)[0]
+            st.write('Sentimen:', sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
 
