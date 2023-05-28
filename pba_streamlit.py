@@ -107,17 +107,6 @@ def main():
     if st.button('Hapus Model'):
         delete_sentiment_model()
 
-    # Tombol untuk memuat model
-    if st.button('Import Model'):
-        model, vectorizer = load_model()
-        if model is not None and vectorizer is not None:
-            st.success('Model berhasil dimuat dari file sentiment_model.pkl')
-        else:
-            st.warning('Gagal memuat model. File sentiment_model.pkl tidak ditemukan.')
-
-    # Memuat model dari file pickle
-    model, vectorizer = load_model()
-
     # Kolom input teks untuk analisis sentimen
     st.subheader('Analisis Sentimen')
     review_text = st.text_input('Masukkan tweet tentang waralaba')
