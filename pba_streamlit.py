@@ -98,7 +98,7 @@ def main():
     # Tombol untuk menganalisis sentimen
     if st.button('Analisis Sentimen'):
         if model is not None and vectorizer is not None:
-            sentiment = get_sentiment(review_text)
+            sentiment = model.predict(vectorizer.transform([review_text]))[0]
             st.write('Sentimen:', sentiment)
         else:
             st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
