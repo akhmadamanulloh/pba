@@ -72,26 +72,24 @@ def train_model():
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
-# Load model and vectorizer
-model_trained = False
-try:
-    with open('sentiment_model.pkl', 'rb') as f:
-        model = pickle.load(f)
-
-    # Memuat vectorizer dari file pickle
-    with open('vectorizer.pkl', 'rb') as f:
-        vectorizer = pickle.load(f)
-        
-    model_trained = True
-except FileNotFoundError:
-    model = None
-    vectorizer = None
-
 # Fungsi utama Streamlit
 def main():
-    global model_trained
-    
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
+
+    # Load model and vectorizer
+    model_trained = False
+    try:
+        with open('sentiment_model.pkl', 'rb') as f:
+            model = pickle.load(f)
+
+        # Memuat vectorizer dari file pickle
+        with open('vectorizer.pkl', 'rb') as f:
+            vectorizer = pickle.load(f)
+
+        model_trained = True
+    except FileNotFoundError:
+        model = None
+        vectorizer = None
 
     # Tombol untuk melatih model
     if st.button('Latih Model') and not model_trained:
