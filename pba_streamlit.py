@@ -13,7 +13,6 @@ from sklearn.naive_bayes import MultinomialNB
 
 nltk.download('punkt')
 nltk.download('stopwords')
-
 # Fungsi untuk melakukan preprosesing teks
 def preprocess_text(text):
     # Case folding
