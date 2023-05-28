@@ -113,6 +113,8 @@ def main():
             preprocessed_text = preprocess_text(review_text)
             X = vectorizer.transform([preprocessed_text])
             predicted_sentiment = model.predict(X)[0]
+            original_sentiment = get_sentiment(review_text)
+            st.write('Sentimen Asli:', original_sentiment)
             st.write('Sentimen Prediksi:', predicted_sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Melatih Model" terlebih dahulu.')
