@@ -65,7 +65,7 @@ def train_model():
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
-    y = df['Label']
+    y = df['sentiment']
 
     # Melakukan vektorisasi teks menggunakan TF-IDF
     vectorizer = TfidfVectorizer()
