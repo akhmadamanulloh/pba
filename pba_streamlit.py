@@ -73,6 +73,7 @@ def train_model():
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
 # Load model and vectorizer
+model_trained = False
 try:
     with open('sentiment_model.pkl', 'rb') as f:
         model = pickle.load(f)
@@ -80,6 +81,8 @@ try:
     # Memuat vectorizer dari file pickle
     with open('vectorizer.pkl', 'rb') as f:
         vectorizer = pickle.load(f)
+        
+    model_trained = True
 except FileNotFoundError:
     model = None
     vectorizer = None
@@ -89,16 +92,17 @@ def main():
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
 
     # Tombol untuk melatih model
-    if st.button('Latih Model'):
+    if st.button('Latih Model') and not model_trained:
         train_model()
+        model_trained = True
 
     # Input teks untuk analisis sentimen
     review_text = st.text_input('Masukkan teks untuk analisis sentimen')
 
     # Tombol untuk menganalisis sentimen
-    if st.button('Analisis Sentimen', disabled=model is None or vectorizer is None):
+    if st.button('Analisis Sentimen', disabled=not model_trained):
         if model is not None and vectorizer is not None:
-            sentiment = model.predict(vectorizer.transform([review_text]))[0]
+            sentiment = get_sentiment(review_text)
             st.write('Sentimen:', sentiment)
         else:
             st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
