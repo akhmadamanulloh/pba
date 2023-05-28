@@ -65,7 +65,7 @@ def train_model():
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
-    y = df['sentiment']
+    y = df['Label']
 
     # Melakukan vektorisasi teks menggunakan TF-IDF
     vectorizer = TfidfVectorizer()
@@ -93,7 +93,7 @@ def load_model():
 
         with open('vectorizer.pkl', 'rb') as f:
             vectorizer = pickle.load(f)
-        
+
         return model, vectorizer
     except FileNotFoundError:
         return None, None
@@ -122,7 +122,7 @@ def main():
         if model is not None and vectorizer is not None:
             sentiment = get_sentiment(review_text)
             st.write('Sentimen Asli:', sentiment)
-            
+
             preprocessed_text = preprocess_text(review_text)
             X = vectorizer.transform([preprocessed_text])
             predicted_sentiment = model.predict(X)[0]
