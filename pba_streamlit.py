@@ -58,7 +58,7 @@ def train_model():
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
 
     # Mendapatkan sentimen
-    df['sentiment'] = df['Tweet'].apply(get_sentiment)
+    df['sentiment'] = df['Preprocessed_Text'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
