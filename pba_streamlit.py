@@ -12,6 +12,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 nltk.download('punkt')
 nltk.download('stopwords')
+import streamlit as st
+import pandas as pd
+import pickle
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer
+from textblob import TextBlob
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
     # Case folding
@@ -28,17 +39,6 @@ def preprocess_text(text):
 
     return ' '.join(tokens)
 
-# Fungsi untuk mendapatkan sentimen menggunakan TextBlob
-def get_sentiment(text):
-    blob = TextBlob(text)
-    sentiment = blob.sentiment.polarity
-    if sentiment > 0:
-        return 'Positif'
-    elif sentiment < 0:
-        return 'Negatif'
-    else:
-        return 'Netral'
-
 # Fungsi untuk melatih model Naive Bayes dan menyimpannya ke dalam file pickle
 def train_model():
     # Baca data CSV
@@ -46,9 +46,6 @@ def train_model():
 
     # Preprocessing teks
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
-
-    # Mendapatkan sentimen
-    df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
@@ -58,18 +55,9 @@ def train_model():
     vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(X)
 
-    # Memisahkan data menjadi data pelatihan dan data pengujian
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     # Melatih model Naive Bayes
     model = MultinomialNB()
-    model.fit(X_train, y_train)
-
-    # Memprediksi label untuk data pengujian
-    y_pred = model.predict(X_test)
-
-    # Menghitung akurasi model
-    accuracy = accuracy_score(y_test, y_pred)
+    model.fit(X, y)
 
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
@@ -80,7 +68,6 @@ def train_model():
         pickle.dump(vectorizer, f)
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
-    st.write('Akurasi Model:', accuracy)
 
 # Fungsi untuk menganalisis sentimen menggunakan model Naive Bayes
 def analyze_sentiment(text, model, vectorizer):
@@ -93,11 +80,19 @@ def analyze_sentiment(text, model, vectorizer):
     # Memprediksi sentimen
     sentiment = model.predict(text_vectorized)[0]
 
-    # Mendapatkan polaritas menggunakan TextBlob
-    blob = TextBlob(text)
-    polarity = blob.sentiment.polarity
+    # Polarity check menggunakan TextBlob
+    polarity = TextBlob(text).sentiment.polarity
 
     return sentiment, polarity
+
+# Fungsi untuk mengklasifikasikan polarity berdasarkan nilai polaritas
+def classify_polarity(polarity):
+    if polarity < 0:
+        return 'Negatif'
+    elif polarity == 0:
+        return 'Netral'
+    else:
+        return 'Positif'
 
 # Fungsi utama Streamlit
 def main():
@@ -108,24 +103,32 @@ def main():
         train_model()
 
     # Memuat model dari file pickle
-    with open('sentiment_model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    try:
+        with open('sentiment_model.pkl', 'rb') as f:
+            model = pickle.load(f)
+    except FileNotFoundError:
+        model = None
 
     # Memuat vectorizer dari file pickle
-    with open('vectorizer.pkl', 'rb') as f:
-        vectorizer = pickle.load(f)
+    try:
+        with open('vectorizer.pkl', 'rb') as f:
+            vectorizer = pickle.load(f)
+    except FileNotFoundError:
+        vectorizer = None
 
-    # Kolom input teks untuk analisis sentimen
-    st.subheader('Analisis Sentimen')
-    review_text = st.text_input('Masukkan tweet tentang waralaba')
+    # Input teks untuk analisis sentimen
+    review_text = st.text_input('Masukkan teks untuk analisis sentimen')
 
-    if review_text and model and vectorizer:
-        # Tombol untuk menganalisis sentimen
-        if st.button('Analisis'):
+    # Tombol untuk menganalisis sentimen
+    if st.button('Analisis Sentimen'):
+        if model is not None and vectorizer is not None:
             sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
             polarity_label = classify_polarity(polarity)
+
             st.write('Sentimen:', sentiment)
-            st.write('Polarity:', polarity_label)
+            st.write('Polaritas:', polarity_label)
+        else:
+            st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
 
 if __name__ == '__main__':
     main()
