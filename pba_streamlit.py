@@ -103,7 +103,7 @@ def main():
             review_text = st.text_input('Masukkan tweet tentang waralaba')
 
             # Tombol untuk menganalisis sentimen
-            if st.button('Analisis'):
+            if st.button('Analisis', key='predict_button'):
                 preprocessed_text = preprocess_text(review_text)
                 X = vectorizer.transform([preprocessed_text])
                 predicted_sentiment = model.predict(X)[0]
