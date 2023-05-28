@@ -83,6 +83,14 @@ def train_model():
         pickle.dump(vectorizer, f)
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
+# Fungsi untuk menghapus file pkl sentimen sebelumnya
+def delete_sentiment_model():
+    file_path = 'sentiment_model.pkl'
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        st.success("File sentiment_model.pkl berhasil dihapus.")
+    else:
+        st.warning("File sentiment_model.pkl tidak ditemukan.")
 
 # Fungsi utama Streamlit
 def main():
@@ -90,6 +98,7 @@ def main():
 
     # Tombol untuk melatih model
     if st.button('Latih Model'):
+        delete_sentiment_model()
         train_model()
 
     # Memuat model dari file pickle
