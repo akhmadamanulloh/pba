@@ -10,6 +10,7 @@ from textblob import TextBlob
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+pip install sastrawi
 
 nltk.download('punkt')
 nltk.download('stopwords')
