@@ -5,7 +5,6 @@ import pickle
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from textblob import TextBlob
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
@@ -26,14 +25,9 @@ def preprocess_text(text):
     # Tokenizing
     tokens = word_tokenize(text)
     
-    # Stemming
-    factory = StemmerFactory()
-    stemmer = factory.create_stemmer()
-    stemmed_tokens = [stemmer.stem(token) for token in tokens]
-    
     # Menghapus stop words
     stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian"))
-    filtered_tokens = [token for token in stemmed_tokens if token not in stop_words]
+    filtered_tokens = [token for token in tokens if token not in stop_words]
     
     # Menggabungkan kembali kata-kata yang telah diproses
     preprocessed_text = ' '.join(filtered_tokens)
