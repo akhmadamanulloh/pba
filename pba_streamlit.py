@@ -15,17 +15,6 @@ nltk.download('stopwords')
 
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
-    
-
-# Tentukan jalur lengkap ke file pkl yang ingin dihapus
-file_path = 'sentiment_model.pkl'
-
-# Periksa apakah file ada sebelum menghapusnya
-if os.path.exists(file_path):
-    os.remove(file_path)
-    print("File berhasil dihapus.")
-else:
-    print("File tidak ditemukan.")
     # Case folding
     text = text.lower()
 
@@ -51,6 +40,15 @@ def get_sentiment(text):
     else:
         return 'Netral'
 
+# Fungsi untuk menghapus file pkl sentimen sebelumnya
+def delete_sentiment_model():
+    file_path = 'sentiment_model.pkl'
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        st.success("File sentiment_model.pkl berhasil dihapus.")
+    else:
+        st.warning("File sentiment_model.pkl tidak ditemukan.")
+
 # Fungsi untuk melatih model Naive Bayes dan menyimpannya ke dalam file pickle
 def train_model():
     # Baca data CSV
@@ -73,7 +71,7 @@ def train_model():
     # Melatih model Naive Bayes
     model = MultinomialNB()
     model.fit(X, y)
-    
+
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
         pickle.dump(model, f)
@@ -83,14 +81,6 @@ def train_model():
         pickle.dump(vectorizer, f)
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
-# Fungsi untuk menghapus file pkl sentimen sebelumnya
-def delete_sentiment_model():
-    file_path = 'sentiment_model.pkl'
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        st.success("File sentiment_model.pkl berhasil dihapus.")
-    else:
-        st.warning("File sentiment_model.pkl tidak ditemukan.")
 
 # Fungsi utama Streamlit
 def main():
