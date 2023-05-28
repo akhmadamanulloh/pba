@@ -56,8 +56,11 @@ def train_model():
     # Baca data CSV
     df = pd.read_csv('data_tweet.csv')
 
-    # Preprocessing teks
-    df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
+# Preprocessing teks
+df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
+
+# Mendapatkan sentimen
+df['sentiment'] = df['Preprocessed_Text'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
