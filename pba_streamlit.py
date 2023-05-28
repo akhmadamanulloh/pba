@@ -9,6 +9,7 @@ from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 nltk.download('punkt')
+nltk.download('stopwords')
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
     # Case folding
