@@ -13,6 +13,13 @@ import os
 nltk.download('punkt')
 nltk.download('stopwords')
 
+# Download stopword Bahasa Indonesia
+nltk.download('stopwords')
+stop_words_id = set(stopwords.words('indonesian'))
+
+# Download stopword Bahasa Inggris
+stop_words_en = set(stopwords.words('english'))
+
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
     # Case folding
@@ -20,8 +27,7 @@ def preprocess_text(text):
 
     # Filtering dan tokenizing
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
-    tokens = [token for token in tokens if token.isalpha() and token not in stop_words]
+    tokens = [token for token in tokens if token.isalpha() and token not in stop_words_id and token not in stop_words_en]
 
     # Stemming
     stemmer = PorterStemmer()
