@@ -8,6 +8,8 @@ from nltk.stem import PorterStemmer
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 nltk.download('punkt')
 nltk.download('stopwords')
 # Fungsi untuk melakukan preprocessing teks
