@@ -82,26 +82,41 @@ def train_model():
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
+# Fungsi untuk memuat model dari file pickle
+def load_model():
+    try:
+        with open('sentiment_model.pkl', 'rb') as f:
+            model = pickle.load(f)
+
+        with open('vectorizer.pkl', 'rb') as f:
+            vectorizer = pickle.load(f)
+        
+        return model, vectorizer
+    except FileNotFoundError:
+        return None, None
+
 # Fungsi utama Streamlit
 def main():
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
 
     # Tombol untuk melatih model
     if st.button('Latih Model'):
-        delete_sentiment_model()
         train_model()
 
-    # Memuat model dari file pickle
-    try:
-        with open('sentiment_model.pkl', 'rb') as f:
-            model = pickle.load(f)
+    # Tombol untuk menghapus model
+    if st.button('Hapus Model'):
+        delete_sentiment_model()
 
-        # Memuat vectorizer dari file pickle
-        with open('vectorizer.pkl', 'rb') as f:
-            vectorizer = pickle.load(f)
-    except FileNotFoundError:
-        model = None
-        vectorizer = None
+    # Tombol untuk memuat model
+    if st.button('Import Model'):
+        model, vectorizer = load_model()
+        if model is not None and vectorizer is not None:
+            st.success('Model berhasil dimuat dari file sentiment_model.pkl')
+        else:
+            st.warning('Gagal memuat model. File sentiment_model.pkl tidak ditemukan.')
+
+    # Memuat model dari file pickle
+    model, vectorizer = load_model()
 
     # Kolom input teks untuk analisis sentimen
     st.subheader('Analisis Sentimen')
@@ -113,7 +128,7 @@ def main():
             sentiment = get_sentiment(review_text)
             st.write('Sentimen:', sentiment)
         else:
-            st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
+            st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
 
 if __name__ == '__main__':
     main()
