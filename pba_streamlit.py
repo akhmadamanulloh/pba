@@ -114,15 +114,13 @@ def main():
     st.subheader('Analisis Sentimen')
     review_text = st.text_input('Masukkan tweet tentang waralaba')
 
-    if model is not None and vectorizer is not None:
+    if review_text and model and vectorizer:
         # Tombol untuk menganalisis sentimen
         if st.button('Analisis'):
             sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
             polarity_label = classify_polarity(polarity)
             st.write('Sentimen:', sentiment)
             st.write('Polarity:', polarity_label)
-        else:
-            st.warning('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
     else:
         st.warning('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
 
