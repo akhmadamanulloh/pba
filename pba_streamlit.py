@@ -99,13 +99,13 @@ def load_model():
 def main():
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
 
-    # Tombol untuk melatih model
-    if st.button('Latih Model'):
-        train_model()
-
     # Tombol untuk menghapus model
     if st.button('Hapus Model'):
         delete_sentiment_model()
+
+    # Tombol untuk melatih model
+    if st.button('Latih Model'):
+        train_model()
 
     # Memuat model dari file pickle
     model, vectorizer = load_model()
