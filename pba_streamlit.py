@@ -7,14 +7,18 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import Adam
+from sklearn.naive_bayes import MultinomialNB
 import os
 
 nltk.download('punkt')
 nltk.download('stopwords')
+
+# Download stopword Bahasa Indonesia
+nltk.download('stopwords')
+stop_words_id = set(stopwords.words('indonesian'))
+
+# Download stopword Bahasa Inggris
+stop_words_en = set(stopwords.words('english'))
 
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
@@ -23,8 +27,7 @@ def preprocess_text(text):
 
     # Filtering dan tokenizing
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
-    tokens = [token for token in tokens if token.isalpha() and token not in stop_words]
+    tokens = [token for token in tokens if token.isalpha() and token not in stop_words_id and token not in stop_words_en]
 
     # Stemming
     stemmer = PorterStemmer()
@@ -32,16 +35,12 @@ def preprocess_text(text):
 
     return ' '.join(tokens)
 
-# Fungsi untuk mendapatkan sentimen menggunakan TextBlob
+# Fungsi untuk mendapatkan sentimen menggunakan Naive Bayes
 def get_sentiment(text):
-    blob = TextBlob(text)
-    sentiment = blob.sentiment.polarity
-    if sentiment > 0:
-        return 'Positif'
-    elif sentiment < 0:
-        return 'Negatif'
-    else:
-        return 'Netral'
+    preprocessed_text = preprocess_text(text)
+    X = vectorizer.transform([preprocessed_text])
+    predicted_sentiment = model.predict(X)[0]
+    return predicted_sentiment
 
 # Fungsi untuk menghapus file pkl sentimen sebelumnya
 def delete_sentiment_model():
@@ -52,16 +51,13 @@ def delete_sentiment_model():
     else:
         st.warning("File sentiment_model.pkl tidak ditemukan.")
 
-# Fungsi untuk melatih model Neural Network dan menyimpannya ke dalam file pickle
+# Fungsi untuk melatih model Naive Bayes dan menyimpannya ke dalam file pickle
 def train_model():
     # Baca data CSV
     df = pd.read_csv('data_tweet.csv')
 
     # Preprocessing teks
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
-
-    # Mendapatkan sentimen
-    df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
@@ -71,15 +67,9 @@ def train_model():
     vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(X)
 
-    # Melatih model Neural Network
-    model = Sequential()
-    model.add(Dense(64, activation='relu', input_shape=(X.shape[1],)))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dense(3, activation='softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])
-    y_one_hot = pd.get_dummies(y)
-    model.fit(X, y_one_hot, epochs=10, batch_size=32)
+    # Melatih model Naive Bayes
+    model = MultinomialNB()
+    model.fit(X, y)
 
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
@@ -127,18 +117,7 @@ def main():
     if st.button('Analisis', disabled=model is None or vectorizer is None):
         if model is not None and vectorizer is not None:
             sentiment = get_sentiment(review_text)
-            st.write('Sentimen Asli:', sentiment)
-            
-            preprocessed_text = preprocess_text(review_text)
-            X = vectorizer.transform([preprocessed_text])
-
-            # Melakukan prediksi menggunakan model Neural Network
-            y_pred = model.predict(X)
-            predicted_sentiment = y_pred.argmax(axis=1)
-            sentiment_mapping = {0: 'Negatif', 1: 'Netral', 2: 'Positif'}
-            predicted_sentiment = sentiment_mapping[predicted_sentiment[0]]
-            
-            st.write('Sentimen Prediksi:', predicted_sentiment)
+            st.write('Sentimen Prediksi:', sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
 
