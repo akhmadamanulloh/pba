@@ -103,17 +103,19 @@ def main():
         model = None
         vectorizer = None
 
-    # Kolom input teks untuk analisis sentimen
-    st.subheader('Analisis Sentimen')
-    review_text = st.text_input('Masukkan tweet tentang waralaba')
+    # Input teks untuk analisis sentimen
+    review_text = st.text_input('Masukkan teks untuk analisis sentimen')
 
-    if review_text and model and vectorizer:
-        # Tombol untuk menganalisis sentimen
-        if st.button('Analisis'):
+    # Tombol untuk menganalisis sentimen
+    if st.button('Analisis Sentimen'):
+        if model is not None and vectorizer is not None:
             sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
             polarity_label = classify_polarity(polarity)
+
             st.write('Sentimen:', sentiment)
-            st.write('Polarity:', polarity_label)
+            st.write('Polaritas:', polarity_label)
+        else:
+            st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
 
 if __name__ == '__main__':
     main()
