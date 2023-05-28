@@ -97,17 +97,23 @@ def main():
         model, vectorizer = load_model()
         if model is not None and vectorizer is not None:
             st.success('Model berhasil dimuat dari file sentiment_model.pkl')
+        else:
+            st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Melatih Model" terlebih dahulu.')
 
-            # Kolom input teks untuk analisis sentimen
-            st.subheader('Analisis Sentimen')
-            review_text = st.text_input('Masukkan tweet tentang waralaba')
+    # Memuat model dari file pickle
+    model, vectorizer = load_model()
 
-            # Tombol untuk menganalisis sentimen
-            if st.button('Analisis', key='predict_button'):
-                preprocessed_text = preprocess_text(review_text)
-                X = vectorizer.transform([preprocessed_text])
-                predicted_sentiment = model.predict(X)[0]
-                st.write('Sentimen Prediksi:', predicted_sentiment)
+    # Kolom input teks untuk analisis sentimen
+    st.subheader('Analisis Sentimen')
+    review_text = st.text_input('Masukkan tweet tentang waralaba')
+
+    # Tombol untuk menganalisis sentimen
+    if st.button('Analisis'):
+        if model is not None and vectorizer is not None:
+            preprocessed_text = preprocess_text(review_text)
+            X = vectorizer.transform([preprocessed_text])
+            predicted_sentiment = model.predict(X)[0]
+            st.write('Sentimen Prediksi:', predicted_sentiment)
         else:
             st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Melatih Model" terlebih dahulu.')
 
