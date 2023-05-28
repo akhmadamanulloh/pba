@@ -92,9 +92,10 @@ def main():
         vectorizer = None
 
     # Tombol untuk melatih model
-    if not model_trained and st.button('Latih Model'):
-        train_model()
-        model_trained = True
+    if not model_trained:
+        if st.button('Latih Model'):
+            train_model()
+            model_trained = True
 
     # Input teks untuk analisis sentimen
     review_text = st.text_input('Masukkan teks untuk analisis sentimen')
