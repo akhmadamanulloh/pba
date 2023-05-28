@@ -8,12 +8,24 @@ from nltk.stem import PorterStemmer
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
+import os
 
 nltk.download('punkt')
 nltk.download('stopwords')
 
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
+    
+
+# Tentukan jalur lengkap ke file pkl yang ingin dihapus
+file_path = 'sentiment_model.pkl'
+
+# Periksa apakah file ada sebelum menghapusnya
+if os.path.exists(file_path):
+    os.remove(file_path)
+    print("File berhasil dihapus.")
+else:
+    print("File tidak ditemukan.")
     # Case folding
     text = text.lower()
 
@@ -61,7 +73,7 @@ def train_model():
     # Melatih model Naive Bayes
     model = MultinomialNB()
     model.fit(X, y)
-
+    
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
         pickle.dump(model, f)
