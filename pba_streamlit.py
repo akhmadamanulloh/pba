@@ -8,20 +8,9 @@ from nltk.stem import PorterStemmer
 from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+
 nltk.download('punkt')
 nltk.download('stopwords')
-import streamlit as st
-import pandas as pd
-import pickle
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import PorterStemmer
-from textblob import TextBlob
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
 
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
@@ -109,11 +98,8 @@ def main():
     # Tombol untuk menganalisis sentimen
     if st.button('Analisis Sentimen'):
         if model is not None and vectorizer is not None:
-            sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
-            polarity_label = classify_polarity(polarity)
-
+            sentiment = get_sentiment(review_text)
             st.write('Sentimen:', sentiment)
-            st.write('Polaritas:', polarity_label)
         else:
             st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
 
