@@ -72,12 +72,33 @@ def train_model():
 
     st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
+# Fungsi untuk melakukan analisis sentimen menggunakan model
+def analyze_sentiment(text, model, vectorizer):
+    preprocessed_text = preprocess_text(text)
+    vectorized_text = vectorizer.transform([preprocessed_text])
+    sentiment = model.predict(vectorized_text)[0]
+    polarity = model.predict_proba(vectorized_text)[0]
+    return sentiment, polarity
+
+# Fungsi untuk mengklasifikasikan polarity menjadi label
+def classify_polarity(polarity):
+    max_index = polarity.argmax()
+    if max_index == 0:
+        return 'Negatif'
+    elif max_index == 1:
+        return 'Netral'
+    elif max_index == 2:
+        return 'Positif'
+
 # Fungsi utama Streamlit
 def main():
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
 
-    # Load model and vectorizer
-    model_trained = False
+    # Tombol untuk melatih model
+    if st.button('Latih Model'):
+        train_model()
+
+    # Memuat model dari file pickle
     try:
         with open('sentiment_model.pkl', 'rb') as f:
             model = pickle.load(f)
@@ -85,28 +106,21 @@ def main():
         # Memuat vectorizer dari file pickle
         with open('vectorizer.pkl', 'rb') as f:
             vectorizer = pickle.load(f)
-
-        model_trained = True
     except FileNotFoundError:
         model = None
         vectorizer = None
 
-    # Tombol untuk melatih model
-    if not model_trained:
-        if st.button('Latih Model'):
-            train_model()
-            model_trained = True
+    # Kolom input teks untuk analisis sentimen
+    st.subheader('Analisis Sentimen')
+    review_text = st.text_input('Masukkan tweet tentang waralaba')
 
-    # Input teks untuk analisis sentimen
-    review_text = st.text_input('Masukkan teks untuk analisis sentimen')
-
-    # Tombol untuk menganalisis sentimen
-    if st.button('Analisis Sentimen', disabled=not model_trained):
-        if model is not None and vectorizer is not None:
-            sentiment = get_sentiment(review_text)
+    if review_text and model and vectorizer:
+        # Tombol untuk menganalisis sentimen
+        if st.button('Analisis'):
+            sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
+            polarity_label = classify_polarity(polarity)
             st.write('Sentimen:', sentiment)
-        else:
-            st.error('Model belum dilatih. Silakan klik tombol "Latih Model" terlebih dahulu.')
+            st.write('Polarity:', polarity_label)
 
 if __name__ == '__main__':
     main()
