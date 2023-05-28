@@ -89,18 +89,22 @@ def main():
         train_model()
 
     # Memuat model dari file pickle
-    with open('sentiment_model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    try:
+        with open('sentiment_model.pkl', 'rb') as f:
+            model = pickle.load(f)
 
-    # Memuat vectorizer dari file pickle
-    with open('vectorizer.pkl', 'rb') as f:
-        vectorizer = pickle.load(f)
+        # Memuat vectorizer dari file pickle
+        with open('vectorizer.pkl', 'rb') as f:
+            vectorizer = pickle.load(f)
+    except FileNotFoundError:
+        model = None
+        vectorizer = None
 
     # Kolom input teks untuk analisis sentimen
     st.subheader('Analisis Sentimen')
     review_text = st.text_input('Masukkan tweet tentang waralaba')
 
-    if review_text:
+    if review_text and model and vectorizer:
         # Tombol untuk menganalisis sentimen
         if st.button('Analisis'):
             sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
