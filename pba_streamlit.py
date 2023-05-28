@@ -12,6 +12,7 @@ from sklearn.naive_bayes import MultinomialNB
 
 nltk.download('punkt')
 nltk.download('stopwords')
+
 # Fungsi untuk melakukan preprosesing teks
 def preprocess_text(text):
     # Case folding
@@ -44,11 +45,11 @@ def get_sentiment(tweet):
     
     # Menentukan sentimen tweet berdasarkan nilai polaritas
     if polarity > 0:
-        return '1'
+        return 'positif'
     elif polarity < 0:
-        return '-1'
+        return 'negatif'
     else:
-        return '0'
+        return 'netral'
 
 df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
@@ -78,3 +79,8 @@ if st.button("Prediksi Sentimen"):
         st.write("Sentimen: ", sentiment)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
+
+if st.button("Memanggil File Pickle"):
+    with open('sentiment_model.pickle', 'rb') as file:
+        loaded_model = pickle.load(file)
+    st.write("Model Sentimen dari File Pickle: ", loaded_model)
