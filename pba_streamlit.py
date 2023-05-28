@@ -114,7 +114,7 @@ def main():
     st.subheader('Analisis Sentimen')
     review_text = st.text_input('Masukkan tweet tentang waralaba')
 
-    if review_text and model and vectorizer:
+    if model is not None and vectorizer is not None:
         # Tombol untuk menganalisis sentimen
         if st.button('Analisis'):
             sentiment, polarity = analyze_sentiment(review_text, model, vectorizer)
