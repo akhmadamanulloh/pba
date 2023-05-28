@@ -17,9 +17,6 @@ nltk.download('stopwords')
 nltk.download('stopwords')
 stop_words_id = set(stopwords.words('indonesian'))
 
-# Download stopword Bahasa Inggris
-stop_words_en = set(stopwords.words('english'))
-
 # Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
     # Case folding
@@ -27,7 +24,7 @@ def preprocess_text(text):
 
     # Filtering dan tokenizing
     tokens = word_tokenize(text)
-    tokens = [token for token in tokens if token.isalpha() and token not in stop_words_id and token not in stop_words_en]
+    tokens = [token for token in tokens if token.isalpha() and token not in stop_words_id]
 
     # Stemming
     stemmer = PorterStemmer()
@@ -46,41 +43,23 @@ def get_sentiment(text):
     else:
         return 'Netral'
 
-# Fungsi untuk menghapus file pkl sentimen sebelumnya
-def delete_sentiment_model():
-    file_path = 'sentiment_model.pkl'
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        st.success("File sentiment_model.pkl berhasil dihapus.")
-    else:
-        st.warning("File sentiment_model.pkl tidak ditemukan.")
-
 # Fungsi untuk melatih model Naive Bayes dan menyimpannya ke dalam file pickle
-def train_model():
-    # Baca data CSV
-    df = pd.read_csv('data_tweet.csv')
-
+def train_model(df):
     # Preprocessing teks
     df['Preprocessed_Text'] = df['Tweet'].apply(preprocess_text)
-    df['sentiment'] = df['Tweet'].apply(get_sentiment)
+    df['Sentiment'] = df['Preprocessed_Text'].apply(get_sentiment)
+
     # Memisahkan fitur dan label
     X = df['Preprocessed_Text']
-    y = df['sentiment']
+    y = df['Sentiment']
 
     # Melakukan vektorisasi teks menggunakan TF-IDF
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-
-    # Membuat objek TfidfVectorizer untuk melakukan ekstraksi fitur menggunakan metode TF-IDF
     vectorizer = TfidfVectorizer()
-
-    # Melakukan ekstraksi fitur TF-IDF pada data latih dan data uji
-    X_train_tfidf = vectorizer.fit_transform(X_train)
-    X_test_tfidf = vectorizer.transform(X_test)
+    X = vectorizer.fit_transform(X)
 
     # Melatih model Naive Bayes
     model = MultinomialNB()
-    # Melatih model menggunakan data latih yang telah diekstraksi fitur dengan metode TF-IDF.
-    model.fit(X_train_tfidf, y_train)
+    model.fit(X, y)
 
     # Menyimpan model ke dalam file pickle
     with open('sentiment_model.pkl', 'wb') as f:
@@ -89,8 +68,6 @@ def train_model():
     # Menyimpan vectorizer ke dalam file pickle
     with open('vectorizer.pkl', 'wb') as f:
         pickle.dump(vectorizer, f)
-
-    st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
 # Fungsi untuk memuat model dari file pickle
 def load_model():
@@ -109,33 +86,30 @@ def load_model():
 def main():
     st.title('Analisis Sentimen Data Waralaba dari Tweet')
 
-    # Tombol untuk menghapus model
-    if st.button('Hapus Model'):
-        delete_sentiment_model()
+    # Tombol untuk melatih model dan menyimpan ke dalam file pickle
+    if st.button('Melatih Model'):
+        df = pd.read_csv('data_tweet.csv')
+        train_model(df)
+        st.success('Model berhasil dilatih dan disimpan ke dalam file sentiment_model.pkl')
 
-    # Tombol untuk melatih model
-    if st.button('Latih Model'):
-        train_model()
-
-    # Memuat model dari file pickle
-    model, vectorizer = load_model()
-
-    # Kolom input teks untuk analisis sentimen
-    st.subheader('Analisis Sentimen')
-    review_text = st.text_input('Masukkan tweet tentang waralaba')
-
-    # Tombol untuk menganalisis sentimen
-    if st.button('Analisis', disabled=model is None or vectorizer is None):
+    # Tombol untuk memuat model dari file pickle
+    if st.button('Memuat Model'):
+        model, vectorizer = load_model()
         if model is not None and vectorizer is not None:
-            sentiment = get_sentiment(review_text)
-            st.write('Sentimen Asli:', sentiment)
+            st.success('Model berhasil dimuat dari file sentiment_model.pkl')
 
-            preprocessed_text = preprocess_text(review_text)
-            X = vectorizer.transform([preprocessed_text])
-            predicted_sentiment = model.predict(X)[0]
-            st.write('Sentimen Prediksi:', predicted_sentiment)
+            # Kolom input teks untuk analisis sentimen
+            st.subheader('Analisis Sentimen')
+            review_text = st.text_input('Masukkan tweet tentang waralaba')
+
+            # Tombol untuk menganalisis sentimen
+            if st.button('Analisis'):
+                preprocessed_text = preprocess_text(review_text)
+                X = vectorizer.transform([preprocessed_text])
+                predicted_sentiment = model.predict(X)[0]
+                st.write('Sentimen Prediksi:', predicted_sentiment)
         else:
-            st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Latih Model" atau "Import Model" terlebih dahulu.')
+            st.error('Model belum dilatih atau belum dimuat. Silakan klik tombol "Melatih Model" terlebih dahulu.')
 
 if __name__ == '__main__':
     main()
