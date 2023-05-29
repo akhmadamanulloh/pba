@@ -22,15 +22,14 @@ def preprocess_text(text):
     text = text.lower()
     
     # Filtering
-    text = re.sub('\[.*?\]', '', text)
-    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
-    text = re.sub('\w*\d\w*', '', text)
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
     
     # Tokenizing
     tokens = word_tokenize(text)
     
     # Menghapus stop words
-    stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian"))
+    additional_stopwords = ['gtu', 'yg', 'adlh','yaa','adh','akn']
+    stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian")) | set(additional_stopwords)
     filtered_tokens = [token for token in tokens if token not in stop_words]
     
     # Stemming
