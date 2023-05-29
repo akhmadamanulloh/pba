@@ -9,6 +9,7 @@ from textblob import TextBlob
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 
 nltk.download('punkt')
@@ -65,27 +66,37 @@ y = df['sentiment']
 # Memisahkan data menjadi data latih (train) dan data uji (test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-model = MultinomialNB()
-model.fit(X_train, y_train)
+# Membangun model Naive Bayes
+naive_bayes_model = MultinomialNB()
+naive_bayes_model.fit(X_train, y_train)
 
-# Simpan model dalam file pickle
-with open('sentiment_model.pickle', 'wb') as file:
-    pickle.dump(model, file)
+# Membangun model Neural Network
+neural_network_model = MLPClassifier()
+neural_network_model.fit(X_train, y_train)
+
+# Simpan model Naive Bayes dalam file pickle
+with open('naive_bayes_model.pickle', 'wb') as file:
+    pickle.dump(naive_bayes_model, file)
+
+# Simpan model Neural Network dalam file pickle
+with open('neural_network_model.pickle', 'wb') as file:
+    pickle.dump(neural_network_model, file)
 
 # Implementasi aplikasi Streamlit
 st.title("Analisis Sentimen Waralaba")
 text_input = st.text_input("Masukkan teks ulasan:")
+model_choice = st.radio("Pilih Model", ('Naive Bayes', 'Neural Network'))
 
-if st.button("Memanggil File Pickle"):
-    with open('sentiment_model.pickle', 'rb') as file:
-        loaded_model = pickle.load(file)
-    st.write("Model Sentimen dari File Pickle: ", loaded_model)
+if model_choice == 'Naive Bayes':
+    loaded_model = pickle.load(open('naive_bayes_model.pickle', 'rb'))
+elif model_choice == 'Neural Network':
+    loaded_model = pickle.load(open('neural_network_model.pickle', 'rb'))
 
 if st.button("Prediksi Sentimen"):
     if text_input:
         preprocessed_text = preprocess_text(text_input)
         text_vectorized = vectorizer.transform([preprocessed_text])
-        sentiment = model.predict(text_vectorized)[0]
+        sentiment = loaded_model.predict(text_vectorized)[0]
         st.write("Sentimen: ", sentiment)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
