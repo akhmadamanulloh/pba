@@ -9,6 +9,7 @@ from textblob import TextBlob
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -61,8 +62,11 @@ vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(df['preprocessed_text'])
 y = df['sentiment']
 
+# Memisahkan data menjadi data latih (train) dan data uji (test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
 model = MultinomialNB()
-model.fit(X, y)
+model.fit(X_train, y_train)
 
 # Simpan model dalam file pickle
 with open('sentiment_model.pickle', 'wb') as file:
