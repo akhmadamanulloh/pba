@@ -10,7 +10,6 @@ import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import train_test_split
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -47,11 +46,11 @@ def get_sentiment(tweet):
     
     # Menentukan sentimen tweet berdasarkan nilai polaritas
     if polarity > 0:
-        return 'positif'
+        return '1'
     elif polarity < 0:
-        return 'negatif'
+        return '-1'
     else:
-        return 'netral'
+        return '0'
 
 df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
@@ -63,16 +62,12 @@ vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(df['preprocessed_text'])
 y = df['sentiment']
 
-# Memisahkan data menjadi data latih (train) dan data uji (test)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Membangun model Naive Bayes
 naive_bayes_model = MultinomialNB()
-naive_bayes_model.fit(X_train, y_train)
+naive_bayes_model.fit(X, y)
 
-# Membangun model Neural Network
+# Melakukan analisis sentimen menggunakan Neural Network
 neural_network_model = MLPClassifier()
-neural_network_model.fit(X_train, y_train)
+neural_network_model.fit(X, y)
 
 # Simpan model Naive Bayes dalam file pickle
 with open('naive_bayes_model.pickle', 'wb') as file:
@@ -85,18 +80,45 @@ with open('neural_network_model.pickle', 'wb') as file:
 # Implementasi aplikasi Streamlit
 st.title("Analisis Sentimen Waralaba")
 text_input = st.text_input("Masukkan teks ulasan:")
-model_choice = st.radio("Pilih Model", ('Naive Bayes', 'Neural Network'))
+model_choice = st.selectbox("Pilih Model", ["Naive Bayes", "Neural Network"])
 
-if model_choice == 'Naive Bayes':
-    loaded_model = pickle.load(open('naive_bayes_model.pickle', 'rb'))
-elif model_choice == 'Neural Network':
-    loaded_model = pickle.load(open('neural_network_model.pickle', 'rb'))
+if st.button("Delete Pickle"):
+    try:
+        # Hapus file pickle
+        os.remove('naive_bayes_model.pickle')
+        os.remove('neural_network_model.pickle')
+        st.write("Pickle file deleted.")
+    except FileNotFoundError:
+        st.write("Pickle file not found.")
+
+if st.button("Create Model"):
+    if model_choice == "Naive Bayes":
+        naive_bayes_model = MultinomialNB()
+        naive_bayes_model.fit(X, y)
+        with open('naive_bayes_model.pickle', 'wb') as file:
+            pickle.dump(naive_bayes_model, file)
+        st.write("Naive Bayes model created.")
+    elif model_choice == "Neural Network":
+        neural_network_model = MLPClassifier()
+        neural_network_model.fit(X, y)
+        with open('neural_network_model.pickle', 'wb') as file:
+            pickle.dump(neural_network_model, file)
+        st.write("Neural Network model created.")
 
 if st.button("Prediksi Sentimen"):
     if text_input:
         preprocessed_text = preprocess_text(text_input)
         text_vectorized = vectorizer.transform([preprocessed_text])
-        sentiment = loaded_model.predict(text_vectorized)[0]
+        
+        if model_choice == "Naive Bayes":
+            with open('naive_bayes_model.pickle', 'rb') as file:
+                loaded_model = pickle.load(file)
+            sentiment = loaded_model.predict(text_vectorized)[0]
+        elif model_choice == "Neural Network":
+            with open('neural_network_model.pickle', 'rb') as file:
+                loaded_model = pickle.load(file)
+            sentiment = loaded_model.predict(text_vectorized)[0]
+        
         st.write("Sentimen: ", sentiment)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
