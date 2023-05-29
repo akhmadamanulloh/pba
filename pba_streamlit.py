@@ -11,7 +11,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-import os
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -88,33 +87,16 @@ st.title("Analisis Sentimen Waralaba")
 text_input = st.text_input("Masukkan teks ulasan:")
 model_choice = st.radio("Pilih Model", ('Naive Bayes', 'Neural Network'))
 
-if st.button("Delete Pickle"):
-    if model_choice == 'Naive Bayes':
-        os.remove('naive_bayes_model.pickle')
-        st.write("Naive Bayes model deleted.")
-    elif model_choice == 'Neural Network':
-        os.remove('neural_network_model.pickle')
-        st.write("Neural Network model deleted.")
-
-if model_choice == 'Naive Bayes' and os.path.isfile('naive_bayes_model.pickle'):
+if model_choice == 'Naive Bayes':
     loaded_model = pickle.load(open('naive_bayes_model.pickle', 'rb'))
-elif model_choice == 'Neural Network' and os.path.isfile('neural_network_model.pickle'):
+elif model_choice == 'Neural Network':
     loaded_model = pickle.load(open('neural_network_model.pickle', 'rb'))
 
 if st.button("Prediksi Sentimen"):
     if text_input:
         preprocessed_text = preprocess_text(text_input)
         text_vectorized = vectorizer.transform([preprocessed_text])
-        
-        if model_choice == 'Naive Bayes' and os.path.isfile('naive_bayes_model.pickle'):
-            sentiment = loaded_model.predict(text_vectorized)[0]
-        elif model_choice == 'Neural Network' and os.path.isfile('neural_network_model.pickle'):
-            sentiment = loaded_model.predict(text_vectorized)[0]
-        else:
-            st.write("Model not found. Create the model first.")
-            sentiment = None
-        
-        if sentiment is not None:
-            st.write("Sentimen: ", sentiment)
+        sentiment = loaded_model.predict(text_vectorized)[0]
+        st.write("Sentimen: ", sentiment)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
