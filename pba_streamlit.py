@@ -94,12 +94,14 @@ if st.button("Delete Pickle"):
 
 if st.button("Create Model"):
     if model_choice == "Naive Bayes":
-        # Buat model Naive Bayes
+        naive_bayes_model = MultinomialNB()
+        naive_bayes_model.fit(X, y)
         with open('naive_bayes_model.pickle', 'wb') as file:
             pickle.dump(naive_bayes_model, file)
         st.write("Naive Bayes model created.")
     elif model_choice == "Neural Network":
-        # Buat model Neural Network
+        neural_network_model = MLPClassifier()
+        neural_network_model.fit(X, y)
         with open('neural_network_model.pickle', 'wb') as file:
             pickle.dump(neural_network_model, file)
         st.write("Neural Network model created.")
