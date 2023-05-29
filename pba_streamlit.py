@@ -3,6 +3,7 @@ import re
 import string
 import pickle
 import nltk
+import os
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from textblob import TextBlob
@@ -93,14 +94,12 @@ if st.button("Delete Pickle"):
 
 if st.button("Create Model"):
     if model_choice == "Naive Bayes":
-        naive_bayes_model = MultinomialNB()
-        naive_bayes_model.fit(X, y)
+        # Buat model Naive Bayes
         with open('naive_bayes_model.pickle', 'wb') as file:
             pickle.dump(naive_bayes_model, file)
         st.write("Naive Bayes model created.")
     elif model_choice == "Neural Network":
-        neural_network_model = MLPClassifier()
-        neural_network_model.fit(X, y)
+        # Buat model Neural Network
         with open('neural_network_model.pickle', 'wb') as file:
             pickle.dump(neural_network_model, file)
         st.write("Neural Network model created.")
