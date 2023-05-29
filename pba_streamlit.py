@@ -5,6 +5,7 @@ import pickle
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 from textblob import TextBlob
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
@@ -15,7 +16,7 @@ from sklearn.model_selection import train_test_split
 nltk.download('punkt')
 nltk.download('stopwords')
 
-# Fungsi untuk melakukan preprosesing teks
+# Fungsi untuk melakukan preprocessing teks
 def preprocess_text(text):
     # Case folding
     text = text.lower()
@@ -32,8 +33,12 @@ def preprocess_text(text):
     stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian"))
     filtered_tokens = [token for token in tokens if token not in stop_words]
     
+    # Stemming
+    stemmer = PorterStemmer()
+    stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
+    
     # Menggabungkan kembali kata-kata yang telah diproses
-    preprocessed_text = ' '.join(filtered_tokens)
+    preprocessed_text = ' '.join(stemmed_tokens)
     
     return preprocessed_text
 
@@ -55,7 +60,7 @@ def get_sentiment(tweet):
 
 df['sentiment'] = df['Tweet'].apply(get_sentiment)
 
-# Melakukan preprosesing pada teks ulasan
+# Melakukan preprocessing pada teks ulasan
 df['preprocessed_text'] = df['Tweet'].apply(preprocess_text)
 
 # Melakukan analisis sentimen menggunakan Naive Bayes
