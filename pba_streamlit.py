@@ -33,7 +33,6 @@ def preprocess_text(text):
     filtered_tokens = [token for token in tokens if token not in stop_words]
 
     # Stemming
-    stemmer = PorterStemmer()
     stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
 
     # Menggabungkan kembali kata-kata yang telah diproses
@@ -43,6 +42,9 @@ def preprocess_text(text):
 
 # Mengambil daftar stop words
 stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian"))
+
+# Inisialisasi objek PorterStemmer
+stemmer = PorterStemmer()
 
 # Membaca data CSV dan menyimpan ke dalam DataFrame
 df = pd.read_csv('data_tweet.csv')
