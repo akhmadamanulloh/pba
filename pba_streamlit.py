@@ -12,7 +12,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -21,30 +20,26 @@ nltk.download('stopwords')
 def preprocess_text(text):
     # Case folding
     text = text.lower()
-
+    
     # Filtering
     text = re.sub(r'[^a-zA-Z\s]', '', text)
-
+    
     # Tokenizing
     tokens = word_tokenize(text)
-
+    
     # Menghapus stop words
-    additional_stopwords = ['gtu', 'yg', 'adlh', 'yaa', 'adh', 'akn']
+    additional_stopwords = ['gtu', 'yg', 'adlh','yaa','adh','akn']
+    stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian")) | set(additional_stopwords)
     filtered_tokens = [token for token in tokens if token not in stop_words]
-
+    
     # Stemming
+    stemmer = PorterStemmer()
     stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
-
+    
     # Menggabungkan kembali kata-kata yang telah diproses
     preprocessed_text = ' '.join(stemmed_tokens)
-
+    
     return preprocessed_text
-
-# Mengambil daftar stop words
-stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian"))
-
-# Inisialisasi objek PorterStemmer
-stemmer = PorterStemmer()
 
 # Membaca data CSV dan menyimpan ke dalam DataFrame
 df = pd.read_csv('data_tweet.csv')
@@ -53,7 +48,7 @@ df = pd.read_csv('data_tweet.csv')
 def get_sentiment(tweet):
     # Menghitung polaritas tweet
     polarity = TextBlob(tweet).sentiment.polarity
-
+    
     # Menentukan sentimen tweet berdasarkan nilai polaritas
     if polarity > 0:
         return 'positif'
@@ -107,19 +102,5 @@ if st.button("Prediksi Sentimen"):
         text_vectorized = vectorizer.transform([preprocessed_text])
         sentiment = loaded_model.predict(text_vectorized)[0]
         st.write("Sentimen: ", sentiment)
-
-        # Menampilkan hasil preprocessing
-        st.subheader("Hasil Preprocessing:")
-        st.write("Case Folding: ", preprocessed_text.lower())
-        st.write("Filtering: ", re.sub(r'[^a-zA-Z\s]', '', preprocessed_text))
-        st.write("Tokenizing: ", word_tokenize(preprocessed_text))
-        st.write("Stop Words: ", [token for token in word_tokenize(preprocessed_text) if token in stop_words])
-        st.write("Stemming: ", [stemmer.stem(token) for token in word_tokenize(preprocessed_text)])
-
-        # Menghitung akurasi model
-        y_pred = loaded_model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
-        st.subheader("Akurasi Model:")
-        st.write("Akurasi: ", accuracy)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
