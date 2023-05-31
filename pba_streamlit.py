@@ -12,6 +12,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -104,3 +105,10 @@ if st.button("Prediksi Sentimen"):
         st.write("Sentimen: ", sentiment)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
+
+# Menghitung akurasi model
+y_pred = loaded_model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+
+st.subheader("Akurasi Model:")
+st.write("Akurasi: ", accuracy)
