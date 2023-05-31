@@ -28,18 +28,18 @@ def preprocess_text(text):
     # Tokenizing
     tokens = word_tokenize(text)
 
+    # Stemming
+    stemmer = PorterStemmer()
+    stemmed_tokens = [stemmer.stem(token) for token in tokens]
+
     # Menghapus stop words
     additional_stopwords = ['gtu', 'yg', 'adlh', 'yaa', 'adh', 'akn']
     stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian")) | set(
         additional_stopwords)
-    filtered_tokens = [token for token in tokens if token not in stop_words]
-
-    # Stemming
-    stemmer = PorterStemmer()
-    stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
+    filtered_tokens = [token for token in stemmed_tokens if token not in stop_words]
 
     # Menggabungkan kembali kata-kata yang telah diproses
-    preprocessed_text = ' '.join(stemmed_tokens)
+    preprocessed_text = ' '.join(filtered_tokens)
 
     return preprocessed_text
 
