@@ -108,7 +108,7 @@ if st.button("Prediksi Sentimen"):
 
 # Menghitung akurasi model
 y_pred = loaded_model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
+accuracy = accuracy_score(y_test, y_pred) * 100
 
 st.subheader("Akurasi Model:")
-st.write("Akurasi: ", accuracy)
+st.write("Akurasi: {:.2f}%".format(accuracy))
