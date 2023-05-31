@@ -101,8 +101,8 @@ if st.button("Prediksi Sentimen"):
     if text_input:
         preprocessed_text = preprocess_text(text_input)
         text_vectorized = vectorizer.transform([preprocessed_text])
-        sentiment = loaded_model.predict(text_vectorized)[0]
-        st.write("Sentimen: ", sentiment)
+        prediksi = loaded_model.predict(text_vectorized)[0]
+        st.write("Prediksi: ", sentiment)
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
 
