@@ -30,8 +30,6 @@ def preprocess_text(text):
 
     # Menghapus stop words
     additional_stopwords = ['gtu', 'yg', 'adlh', 'yaa', 'adh', 'akn']
-    stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian")) | set(
-        additional_stopwords)
     filtered_tokens = [token for token in tokens if token not in stop_words]
 
     # Stemming
@@ -42,6 +40,9 @@ def preprocess_text(text):
     preprocessed_text = ' '.join(stemmed_tokens)
 
     return preprocessed_text
+
+# Mengambil daftar stop words
+stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian"))
 
 # Membaca data CSV dan menyimpan ke dalam DataFrame
 df = pd.read_csv('data_tweet.csv')
