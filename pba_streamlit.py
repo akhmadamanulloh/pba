@@ -107,11 +107,11 @@ if st.button("Prediksi Sentimen"):
 
         # Menampilkan hasil preprocessing
         st.subheader("Hasil Preprocessing:")
-        st.write("Case Folding: ", text_input.lower())
-        st.write("Filtering: ", re.sub(r'[^a-zA-Z\s]', '', text_input))
-        st.write("Tokenizing: ", word_tokenize(text_input))
-        st.write("Stop Words: ", [token for token in word_tokenize(text_input) if token in stop_words])
-        st.write("Stemming: ", [stemmer.stem(token) for token in word_tokenize(text_input)])
+        st.write("Case Folding: ", preprocessed_text.lower())
+        st.write("Filtering: ", re.sub(r'[^a-zA-Z\s]', '', preprocessed_text))
+        st.write("Tokenizing: ", word_tokenize(preprocessed_text))
+        st.write("Stop Words: ", [token for token in word_tokenize(preprocessed_text) if token in stop_words])
+        st.write("Stemming: ", [stemmer.stem(token) for token in word_tokenize(preprocessed_text)])
 
         # Menghitung akurasi model
         y_pred = loaded_model.predict(X_test)
