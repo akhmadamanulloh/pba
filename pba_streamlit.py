@@ -103,12 +103,13 @@ if st.button("Prediksi Sentimen"):
         text_vectorized = vectorizer.transform([preprocessed_text])
         prediksi = loaded_model.predict(text_vectorized)[0]
         st.write("Prediksi: ", prediksi)
+        # Menghitung akurasi model
+        y_pred = loaded_model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred) * 100
+
+        st.subheader("Akurasi Model:")
+        st.write("Akurasi: {:.2f}%".format(accuracy))
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
 
-# Menghitung akurasi model
-y_pred = loaded_model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred) * 100
 
-st.subheader("Akurasi Model:")
-st.write("Akurasi: {:.2f}%".format(accuracy))
