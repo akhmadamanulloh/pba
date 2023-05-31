@@ -112,7 +112,7 @@ if st.button("Prediksi Sentimen"):
         st.write("Tokenizing: ", word_tokenize(text_input))
         st.write("Stop Words: ", [token for token in word_tokenize(text_input) if token in stop_words])
         st.write("Stemming: ", [stemmer.stem(token) for token in word_tokenize(text_input)])
-        
+
         # Menghitung akurasi model
         y_pred = loaded_model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
