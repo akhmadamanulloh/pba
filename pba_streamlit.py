@@ -10,7 +10,7 @@ from textblob import TextBlob
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
@@ -75,27 +75,27 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 naive_bayes_model = MultinomialNB()
 naive_bayes_model.fit(X_train, y_train)
 
-# Membangun model Neural Network
-neural_network_model = MLPClassifier()
-neural_network_model.fit(X_train, y_train)
+# Membangun model Decision Tree
+decision_tree_model = DecisionTreeClassifier()
+decision_tree_model.fit(X_train, y_train)
 
 # Simpan model Naive Bayes dalam file pickle
 with open('naive_bayes_model.pickle', 'wb') as file:
     pickle.dump(naive_bayes_model, file)
 
-# Simpan model Neural Network dalam file pickle
-with open('neural_network_model.pickle', 'wb') as file:
-    pickle.dump(neural_network_model, file)
+# Simpan model Decision Tree dalam file pickle
+with open('decision_tree_model.pickle', 'wb') as file:
+    pickle.dump(decision_tree_model, file)
 
 # Implementasi aplikasi Streamlit
 st.title("Analisis Sentimen Waralaba")
 text_input = st.text_input("Masukkan teks ulasan:")
-model_choice = st.radio("Pilih Model", ('Naive Bayes', 'Neural Network'))
+model_choice = st.radio("Pilih Model", ('Naive Bayes', 'Decision Tree'))
 
 if model_choice == 'Naive Bayes':
     loaded_model = pickle.load(open('naive_bayes_model.pickle', 'rb'))
-elif model_choice == 'Neural Network':
-    loaded_model = pickle.load(open('neural_network_model.pickle', 'rb'))
+elif model_choice == 'Decision Tree':
+    loaded_model = pickle.load(open('decision_tree_model.pickle', 'rb'))
 
 if st.button("Prediksi Sentimen"):
     if text_input:
