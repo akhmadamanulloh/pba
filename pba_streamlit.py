@@ -69,7 +69,7 @@ X = vectorizer.fit_transform(df['preprocessed_text'])
 y = df['sentiment']
 
 # Memisahkan data menjadi data latih (train) dan data uji (test)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Membangun model Naive Bayes
 naive_bayes_model = MultinomialNB()
@@ -102,6 +102,9 @@ if st.button("Prediksi Sentimen"):
         preprocessed_text = preprocess_text(text_input)
         text_vectorized = vectorizer.transform([preprocessed_text])
         prediksi = loaded_model.predict(text_vectorized)[0]
+        sentiment_asli = get_sentiment(text_input)
+        st.write("Teks Asli: ", text_input)
+        st.write("Sentimen Asli: ", sentiment_asli)
         st.write("Prediksi: ", prediksi)
         # Menghitung akurasi model
         y_pred = loaded_model.predict(X_test)
@@ -111,5 +114,3 @@ if st.button("Prediksi Sentimen"):
         st.write("Akurasi: {:.2f}%".format(accuracy))
     else:
         st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
-
-
