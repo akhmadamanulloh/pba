@@ -69,7 +69,7 @@ X = vectorizer.fit_transform(df['preprocessed_text'])
 y = df['sentiment']
 
 # Memisahkan data menjadi data latih (train) dan data uji (test)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 # Membangun model Naive Bayes
 naive_bayes_model = MultinomialNB()
