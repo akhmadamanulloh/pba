@@ -103,7 +103,6 @@ if st.button("Prediksi Sentimen"):
         text_vectorized = vectorizer.transform([preprocessed_text])
         prediksi = loaded_model.predict(text_vectorized)[0]
         sentiment_asli = get_sentiment(text_input)
-        st.write("Teks Asli: ", text_input)
         st.write("Sentimen Asli: ", sentiment_asli)
         st.write("Prediksi: ", prediksi)
         # Menghitung akurasi model
