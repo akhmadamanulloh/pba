@@ -28,40 +28,28 @@ with Data :
    data
 
 with Ekstraksi :
-   url_tf='https://drive.google.com/file/d/1bmViR9avCJYNdVjgrKCKS7vl2AOu6W8A/view?usp=sharing'
-   url_log_tf='https://drive.google.com/file/d/1-0mBse0FBN9bLUZU8cG4iMpLDW2HolS7/view?usp=sharing'
-   url_oht='https://drive.google.com/file/d/1-4qqy-4kBvZ_k_BBxTetiZrA0Aj8zIyX/view?usp=sharing'
-   url_tf_idf='https://drive.google.com/file/d/1-5bke07KeJ3oiF5Mt0jicQVFgVBRSHUq/view?usp=sharing'
-   file_id1=url_tf.split('/')[-2]
-   file_id2=url_log_tf.split('/')[-2]
-   file_id3=url_oht.split('/')[-2]
-   file_id4=url_tf_idf.split('/')[-2]
 
    st.subheader('Term Frequency (TF)')
-   dwn_url1='https://drive.google.com/uc?id=' + file_id1
    tf = pd.read_csv(dwn_url1)
    tf
    
    st.subheader('Logarithm Frequency (Log-TF)')
-   dwn_url2='https://drive.google.com/uc?id=' + file_id2
    log_tf = pd.read_csv(dwn_url2)
    log_tf
    
    st.subheader('One Hot Encoder / Binary')
-   dwn_url3='https://drive.google.com/uc?id=' + file_id3
    oht = pd.read_csv(dwn_url3)
    oht
    
    st.subheader('TF-IDF')
-   dwn_url4='https://drive.google.com/uc?id=' + file_id4
    tf_idf = pd.read_csv(dwn_url4)
    tf_idf
 
 with lda:
-
+   topik = st.number_input("Masukkan Jumlah Topik yang Diinginkan", 1, step=1)
 
    def submit():
-        lda = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
+        lda = LatentDirichletAllocation(n_components=topik, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
         x=tf.drop('Label', axis=1)
         lda_top=lda.fit_transform(x)
         #bobot setiap topik terhadap dokumen
@@ -71,6 +59,10 @@ with lda:
         U = pd.DataFrame(lda_top, columns=nama_clm)
         U['Label']=tf['Label'].values
         U
+   all = st.button("Submit")
+   if all :
+      st.balloons()
+      submit()
 
 with Model :
     # if all :
