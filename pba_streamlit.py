@@ -47,7 +47,7 @@ with Ekstraksi :
 
 with lda:
    lda = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
-   lda_top=lda.fit_transform(TF)
+   lda_top=lda.fit_transform(tf)
    #bobot setiap topik terhadap dokumen
    U = pd.DataFrame(lda_top, columns=['Topik 1','Topik 2','Topik 3'])
    U['Label']=TF['Label'].values
