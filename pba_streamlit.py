@@ -56,8 +56,10 @@ with lda:
 
 with LDAkmeans:
       kmeans = KMeans(n_clusters=3, random_state=0)
-      clusters = kmeans.fit_predict(U)   
+      x=tf.drop('Label', axis=1)
+      clusters = kmeans.fit_predict(x)   
       U['Cluster'] = clusters
+      U['Label']=tf['Label'].values
       U
    
 with Model :
