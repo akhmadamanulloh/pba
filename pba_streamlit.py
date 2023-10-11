@@ -22,7 +22,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Hasil Dataset", "Hasi
 
 
 with tab1 :
-    csv_path = 'https://raw.githubusercontent.com/arshell19/DATASET/main/dataPTATrunojoyo%20(3).csv'
+    csv_path = 'https://raw.githubusercontent.com/akhmadamanulloh/pba/main/crawling_pta_labeled.csv'
     df = pd.read_csv(csv_path)
     df
 
