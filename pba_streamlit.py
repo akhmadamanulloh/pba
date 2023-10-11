@@ -7,9 +7,10 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.cluster import KMeans  
 from sklearn import tree
 
-Data, Ekstraksi, lda, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA','LDA kmeans', 'Modelling'])
+Data, Ekstraksi, lda, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'LDA kmeans', 'Modelling'])
 
 with Data :
    st.title("""UTS Pencarian & Penambangan Web A""")
@@ -53,12 +54,11 @@ with lda:
         U['Label']=tf['Label'].values
         U
 
-with lda kmeans:
-   from sklearn.cluster import KMeans  
-   kmeans = KMeans(n_clusters=3, random_state=0)
-   clusters = kmeans.fit_predict(U)   
-   U['Cluster'] = clusters
-   U
+with LDA kmeans:
+      kmeans = KMeans(n_clusters=3, random_state=0)
+      clusters = kmeans.fit_predict(U)   
+      U['Cluster'] = clusters
+      U
    
 with Model :
     # if all :
