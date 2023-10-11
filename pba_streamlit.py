@@ -30,19 +30,19 @@ with Data :
 with Ekstraksi :
 
    st.subheader('Term Frequency (TF)')
-   tf = pd.read_csv(dwn_url1)
+   tf = pd.read_csv('TF.csv')
    tf
    
    st.subheader('Logarithm Frequency (Log-TF)')
-   log_tf = pd.read_csv(dwn_url2)
+   log_tf = pd.read_csv('log_TF.csv')
    log_tf
    
    st.subheader('One Hot Encoder / Binary')
-   oht = pd.read_csv(dwn_url3)
+   oht = pd.read_csv('OneHotEncoder.csv')
    oht
    
    st.subheader('TF-IDF')
-   tf_idf = pd.read_csv(dwn_url4)
+   tf_idf = pd.read_csv('TF-IDF.csv')
    tf_idf
 
 with lda:
