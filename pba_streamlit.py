@@ -10,7 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cluster import KMeans  
 from sklearn import tree
 
-Data, Ekstraksi, lda, LDA kmeans, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'LDA kmeans', 'Modelling'])
+Data, Ekstraksi, lda, LDAkmeans, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'LDA kmeans', 'Modelling'])
 
 with Data :
    st.title("""UTS Pencarian & Penambangan Web A""")
@@ -54,7 +54,7 @@ with lda:
         U['Label']=tf['Label'].values
         U
 
-with LDA kmeans:
+with LDAkmeans:
       kmeans = KMeans(n_clusters=3, random_state=0)
       clusters = kmeans.fit_predict(U)   
       U['Cluster'] = clusters
