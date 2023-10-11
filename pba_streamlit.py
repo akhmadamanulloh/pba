@@ -46,23 +46,12 @@ with Ekstraksi :
    tf_idf
 
 with lda:
-   topik = st.number_input("Masukkan Jumlah Topik yang Diinginkan", 1, step=1)
-
-   def submit():
-        lda = LatentDirichletAllocation(n_components=topik, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
+        lda = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
         x=tf.drop('Label', axis=1)
         lda_top=lda.fit_transform(x)
-        #bobot setiap topik terhadap dokumen
-        nama_clm =[]
-        for i in range(topik):
-            nama_clm.append(("Topik "+ str(i+1)))
-        U = pd.DataFrame(lda_top, columns=nama_clm)
+        U = pd.DataFrame(lda_top, columns=['Topik 1','Topik 2','Topik 3'])
         U['Label']=tf['Label'].values
         U
-   all = st.button("Submit")
-   if all :
-      st.balloons()
-      submit()
 
 with Model :
     # if all :
