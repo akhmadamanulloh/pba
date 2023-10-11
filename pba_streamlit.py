@@ -1,115 +1,93 @@
-import pandas as pd
-import re
-import string
-import pickle
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-from textblob import TextBlob
-import streamlit as st
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+from sklearn.decomposition import LatentDirichletAllocation 
 
-nltk.download('punkt')
+import warnings
+import pandas as pd
+import numpy as np
+import nltk
+import streamlit as st 
+
+import re 
+import csv
+
 nltk.download('stopwords')
+nltk.download('punkt')
+warnings.filterwarnings('ignore')
 
-# Fungsi untuk melakukan preprocessing teks
-def preprocess_text(text):
-    # Case folding
-    text = text.lower()
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Hasil Dataset", "Hasil Cleaning Data", 'Hasil Tokenizing Data', 'Hasil Stopword Data', 'Hasil TF-IDF Data', 'Dataset dari TermFrequensi', 'Hasil Topik pada Dokumen', 'Hasil Kata pada Topik'])
+
+
+with tab1 :
+    csv_path = 'https://raw.githubusercontent.com/arshell19/DATASET/main/dataPTATrunojoyo%20(3).csv'
+    df = pd.read_csv(csv_path)
+    df
+
+with tab2 :
+    def cleaning(text):
+        text = re.sub(r'[^a-zA-Z\s]', '', text).strip()
+        return text
     
-    # Filtering
-    text = re.sub(r'[^a-zA-Z\s]', '', text)
-    
-    # Tokenizing
-    tokens = word_tokenize(text)
-    
-    # Menghapus stop words
-    additional_stopwords = ['gtu', 'yg', 'adlh','yaa','adh','akn']
-    stop_words = set(stopwords.words("english")) | set(stopwords.words("indonesian")) | set(additional_stopwords)
-    filtered_tokens = [token for token in tokens if token not in stop_words]
-    
-    # Stemming
-    stemmer = PorterStemmer()
-    stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
-    
-    # Menggabungkan kembali kata-kata yang telah diproses
-    preprocessed_text = ' '.join(stemmed_tokens)
-    
-    return preprocessed_text
+    df['data_clean'] = df['Abstrak'].apply(cleaning)
+    df['data_clean']
 
-# Membaca data CSV dan menyimpan ke dalam DataFrame
-df = pd.read_csv('data_tweet.csv')
+with tab3 :
+    def tokenizer(text):
+        text = text.lower()
+        return word_tokenize(text)
 
-# Melakukan analisis sentimen pada setiap tweet
-def get_sentiment(tweet):
-    # Menghitung polaritas tweet
-    polarity = TextBlob(tweet).sentiment.polarity
-    
-    # Menentukan sentimen tweet berdasarkan nilai polaritas
-    if polarity > 0:
-        return 'positif'
-    elif polarity < 0:
-        return 'negatif'
-    else:
-        return 'netral'
+    df['Tokenizing'] = df['data_clean'].apply(tokenizer)
+    df['Tokenizing']
 
-df['sentiment'] = df['Tweet'].apply(get_sentiment)
+with tab4 :
+    corpus = stopwords.words('indonesian')
 
-# Melakukan preprocessing pada teks ulasan
-df['preprocessed_text'] = df['Tweet'].apply(preprocess_text)
+    def stopwordText(words):
+        return [word for word in words if word not in corpus]
 
-# Melakukan analisis sentimen menggunakan Naive Bayes
-vectorizer = CountVectorizer()
-X = vectorizer.fit_transform(df['preprocessed_text'])
-y = df['sentiment']
+    df['Stopword Removal'] = df['Tokenizing'].apply(stopwordText)
 
-# Memisahkan data menjadi data latih (train) dan data uji (test)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Gabungkan kembali token menjadi kalimat utuh
+    df['stopword'] = df['Stopword Removal'].apply(lambda x: ' '.join(x))
+    df['stopword']
 
-# Membangun model Naive Bayes
-naive_bayes_model = MultinomialNB()
-naive_bayes_model.fit(X_train, y_train)
+with tab5 :
+    def tfidf(dokumen):
+        vectorizer = TfidfVectorizer()
+        x = vectorizer.fit_transform(dokumen).toarray()
+        terms = vectorizer.get_feature_names_out()
 
-# Membangun model Decision Tree
-decision_tree_model = DecisionTreeClassifier()
-decision_tree_model.fit(X_train, y_train)
+        final_tfidf = pd.DataFrame(x, columns=terms)
+        final_tfidf.insert(0, 'Abstrak', dokumen)
 
-# Simpan model Naive Bayes dalam file pickle
-with open('naive_bayes_model.pickle', 'wb') as file:
-    pickle.dump(naive_bayes_model, file)
+        return (vectorizer, final_tfidf)
 
-# Simpan model Decision Tree dalam file pickle
-with open('decision_tree_model.pickle', 'wb') as file:
-    pickle.dump(decision_tree_model, file)
+    tfidf_vectorizer, final_tfidf = tfidf(df['stopword'])
+    final_tfidf 
 
-# Implementasi aplikasi Streamlit
-st.title("Analisis Sentimen Waralaba")
-text_input = st.text_input("Masukkan teks ulasan:")
-model_choice = st.radio("Pilih Model", ('Naive Bayes', 'Decision Tree'))
+with tab6 :
+    csv_path = 'https://raw.githubusercontent.com/arshell19/DATASET/main/HasilTermFrequensi-new.csv'
+    df = pd.read_csv(csv_path)
+    df
 
-if model_choice == 'Naive Bayes':
-    loaded_model = pickle.load(open('naive_bayes_model.pickle', 'rb'))
-elif model_choice == 'Decision Tree':
-    loaded_model = pickle.load(open('decision_tree_model.pickle', 'rb'))
+with tab7 :
+    X = df.drop('Abstrak', axis=1)
+    k = 2
+    alpha = 0.1
+    beta = 0.2
 
-if st.button("Prediksi Sentimen"):
-    if text_input:
-        preprocessed_text = preprocess_text(text_input)
-        text_vectorized = vectorizer.transform([preprocessed_text])
-        prediksi = loaded_model.predict(text_vectorized)[0]
-        sentiment_asli = get_sentiment(text_input)
-        st.write("Sentimen Asli: ", sentiment_asli)
-        st.write("Prediksi: ", prediksi)
-        # Menghitung akurasi model
-        y_pred = loaded_model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred) * 100
+    lda = LatentDirichletAllocation(n_components=k, doc_topic_prior=alpha, topic_word_prior=beta)
+    proporsi_topik_dokumen = lda.fit_transform(X)
+    #proporsi topik pada dokumen
+    dokumen = df['Abstrak']
+    output_proporsi_TD = pd.DataFrame(proporsi_topik_dokumen, columns=['Topik_1', 'Topik_2'])
+    output_proporsi_TD.insert(0,'Abstrak', dokumen)
+    output_proporsi_TD
 
-        st.subheader("Akurasi Model:")
-        st.write("Akurasi: {:.2f}%".format(accuracy))
-    else:
-        st.write("Masukkan teks ulasan untuk melakukan prediksi sentimen.")
+with tab8 :
+    #proporsi kata pada topik
+    distribusi_kata_topik = pd.DataFrame(lda.components_)
+    distribusi_kata_topik
