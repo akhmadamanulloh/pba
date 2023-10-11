@@ -24,25 +24,25 @@ with Data :
             5) Abstrak
             5) Label""")
    st.subheader('Data')
-   data=pd.read_csv('crawling_pta_labeled.csv')
+   data=pd.read_csv('https://raw.githubusercontent.com/akhmadamanulloh/pba/main/crawling_pta_labeled.csv')
    data
 
 with Ekstraksi :
 
    st.subheader('Term Frequency (TF)')
-   tf = pd.read_csv('TF.csv')
+   tf = pd.read_csv('https://raw.githubusercontent.com/akhmadamanulloh/pba/main/TF.csv')
    tf
    
    st.subheader('Logarithm Frequency (Log-TF)')
-   log_tf = pd.read_csv('log_TF.csv')
+   log_tf = pd.read_csv('https://raw.githubusercontent.com/akhmadamanulloh/pba/main/log_TF.csv')
    log_tf
    
    st.subheader('One Hot Encoder / Binary')
-   oht = pd.read_csv('OneHotEncoder.csv')
+   oht = pd.read_csv('https://raw.githubusercontent.com/akhmadamanulloh/pba/main/OneHotEncoder.csv')
    oht
    
    st.subheader('TF-IDF')
-   tf_idf = pd.read_csv('TF-IDF.csv')
+   tf_idf = pd.read_csv('https://raw.githubusercontent.com/akhmadamanulloh/pba/main/TF-IDF.csv')
    tf_idf
 
 with lda:
