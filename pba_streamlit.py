@@ -10,11 +10,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cluster import KMeans  
 from sklearn import tree
 
-Data, Ekstraksi, lda, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'LDA kmeans', 'Modelling'])
+Data, Ekstraksi, lda, LDA kmeans, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'LDA kmeans', 'Modelling'])
 
 with Data :
    st.title("""UTS Pencarian & Penambangan Web A""")
-   st.text('Zuni Amanda Dewi 200411100051')
+   st.text('Akhmad Amanulloh 200411100099')
    st.subheader('Deskripsi Data')
    st.write("""Dimana Fitur yang ada di dalam data tersebut diantaranya :""")
    st.text("""
