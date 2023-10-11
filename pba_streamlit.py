@@ -1,93 +1,125 @@
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-from sklearn.decomposition import LatentDirichletAllocation 
-
-import warnings
+import streamlit as st
 import pandas as pd
 import numpy as np
-import nltk
-import streamlit as st 
+from numpy import array
+import pickle
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import tree
 
-import re 
-import csv
+Data, Ekstraksi, lda, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'Modelling'])
 
-nltk.download('stopwords')
-nltk.download('punkt')
-warnings.filterwarnings('ignore')
+with Data :
+   st.title("""UTS Pencarian & Penambangan Web A""")
+   st.text('Zuni Amanda Dewi 200411100051')
+   st.subheader('Deskripsi Data')
+   st.write("""Dimana Fitur yang ada di dalam data tersebut diantaranya :""")
+   st.text("""
+            1) Judul
+            2) Penulis
+            3) Dosen Pembimbing 1
+            4) Dosen Pembinbing 2
+            5) Abstrak
+            5) Label""")
+   st.subheader('Data')
+   data=pd.read_csv('crawling_pta_labeled.csv')
+   data
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Hasil Dataset", "Hasil Cleaning Data", 'Hasil Tokenizing Data', 'Hasil Stopword Data', 'Hasil TF-IDF Data', 'Dataset dari TermFrequensi', 'Hasil Topik pada Dokumen', 'Hasil Kata pada Topik'])
+with Ekstraksi :
+   url_tf='https://drive.google.com/file/d/1bmViR9avCJYNdVjgrKCKS7vl2AOu6W8A/view?usp=sharing'
+   url_log_tf='https://drive.google.com/file/d/1-0mBse0FBN9bLUZU8cG4iMpLDW2HolS7/view?usp=sharing'
+   url_oht='https://drive.google.com/file/d/1-4qqy-4kBvZ_k_BBxTetiZrA0Aj8zIyX/view?usp=sharing'
+   url_tf_idf='https://drive.google.com/file/d/1-5bke07KeJ3oiF5Mt0jicQVFgVBRSHUq/view?usp=sharing'
+   file_id1=url_tf.split('/')[-2]
+   file_id2=url_log_tf.split('/')[-2]
+   file_id3=url_oht.split('/')[-2]
+   file_id4=url_tf_idf.split('/')[-2]
+
+   st.subheader('Term Frequency (TF)')
+   dwn_url1='https://drive.google.com/uc?id=' + file_id1
+   tf = pd.read_csv(dwn_url1)
+   tf
+   
+   st.subheader('Logarithm Frequency (Log-TF)')
+   dwn_url2='https://drive.google.com/uc?id=' + file_id2
+   log_tf = pd.read_csv(dwn_url2)
+   log_tf
+   
+   st.subheader('One Hot Encoder / Binary')
+   dwn_url3='https://drive.google.com/uc?id=' + file_id3
+   oht = pd.read_csv(dwn_url3)
+   oht
+   
+   st.subheader('TF-IDF')
+   dwn_url4='https://drive.google.com/uc?id=' + file_id4
+   tf_idf = pd.read_csv(dwn_url4)
+   tf_idf
+
+with lda:
 
 
-with tab1 :
-    csv_path = 'https://raw.githubusercontent.com/akhmadamanulloh/pba/main/crawling_pta_labeled.csv'
-    df = pd.read_csv(csv_path)
-    df
+   def submit():
+        lda = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
+        x=tf.drop('Label', axis=1)
+        lda_top=lda.fit_transform(x)
+        #bobot setiap topik terhadap dokumen
+        nama_clm =[]
+        for i in range(topik):
+            nama_clm.append(("Topik "+ str(i+1)))
+        U = pd.DataFrame(lda_top, columns=nama_clm)
+        U['Label']=tf['Label'].values
+        U
 
-with tab2 :
-    def cleaning(text):
-        text = re.sub(r'[^a-zA-Z\s]', '', text).strip()
-        return text
-    
-    df['data_clean'] = df['Abstrak'].apply(cleaning)
-    df['data_clean']
+with Model :
+    # if all :
+        st.subheader('Jumlah Topik yang Anda Gunakan : ' +str(topik))
+        st.write ("Jika pada menu LDA tidak menentukan jumlah topiknya maka proses modelling akan di default dengan jumlah topik = 1")
+        lda = LatentDirichletAllocation(n_components=topik, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
+        x=tf.drop(columns='Label')
+        lda_top=lda.fit_transform(x)
+        y = tf.Label
+        X_train,X_test,y_train,y_test = train_test_split(lda_top,y,test_size=0.2,random_state=42)
+        
+        metode1 = KNeighborsClassifier(n_neighbors=3)
+        metode1.fit(X_train, y_train)
 
-with tab3 :
-    def tokenizer(text):
-        text = text.lower()
-        return word_tokenize(text)
+        metode2 = GaussianNB()
+        metode2.fit(X_train, y_train)
 
-    df['Tokenizing'] = df['data_clean'].apply(tokenizer)
-    df['Tokenizing']
+        metode3 = tree.DecisionTreeClassifier(criterion="gini")
+        metode3.fit(X_train, y_train)
 
-with tab4 :
-    corpus = stopwords.words('indonesian')
+        st.write ("Pilih metode yang ingin anda gunakan :")
+        met1 = st.checkbox("KNN")
+        # if met1 :
+        #     st.write("Hasil Akurasi Data Training Menggunakan KNN sebesar : ", (100 * metode1.score(X_train, y_train)))
+        #     st.write("Hasil Akurasi Data Testing Menggunakan KNN sebesar : ", (100 * (metode1.score(X_test, y_test))))
+        met2 = st.checkbox("Naive Bayes")
+        # if met2 :
+        #     st.write("Hasil Akurasi Data Training Menggunakan Naive Bayes sebesar : ", (100 * metode2.score(X_train, y_train)))
+        #     st.write("Hasil Akurasi Data Testing Menggunakan Naive Bayes sebesar : ", (100 * metode2.score(X_test, y_test)))
+        met3 = st.checkbox("Decesion Tree")
+        # if met3 :
+            # st.write("Hasil Akurasi Data Training Menggunakan Decission Tree sebesar : ", (100 * metode3.score(X_train, y_train)))
+            # st.write("Hasil Akurasi Data Testing Menggunakan Decission Tree sebesar : ", (100 * metode3.score(X_test, y_test)))
+        submit2 = st.button("Pilih")
 
-    def stopwordText(words):
-        return [word for word in words if word not in corpus]
-
-    df['Stopword Removal'] = df['Tokenizing'].apply(stopwordText)
-
-    # Gabungkan kembali token menjadi kalimat utuh
-    df['stopword'] = df['Stopword Removal'].apply(lambda x: ' '.join(x))
-    df['stopword']
-
-with tab5 :
-    def tfidf(dokumen):
-        vectorizer = TfidfVectorizer()
-        x = vectorizer.fit_transform(dokumen).toarray()
-        terms = vectorizer.get_feature_names_out()
-
-        final_tfidf = pd.DataFrame(x, columns=terms)
-        final_tfidf.insert(0, 'Abstrak', dokumen)
-
-        return (vectorizer, final_tfidf)
-
-    tfidf_vectorizer, final_tfidf = tfidf(df['stopword'])
-    final_tfidf 
-
-with tab6 :
-    csv_path = 'https://raw.githubusercontent.com/arshell19/DATASET/main/HasilTermFrequensi-new.csv'
-    df = pd.read_csv(csv_path)
-    df
-
-with tab7 :
-    X = df.drop('Abstrak', axis=1)
-    k = 2
-    alpha = 0.1
-    beta = 0.2
-
-    lda = LatentDirichletAllocation(n_components=k, doc_topic_prior=alpha, topic_word_prior=beta)
-    proporsi_topik_dokumen = lda.fit_transform(X)
-    #proporsi topik pada dokumen
-    dokumen = df['Abstrak']
-    output_proporsi_TD = pd.DataFrame(proporsi_topik_dokumen, columns=['Topik_1', 'Topik_2'])
-    output_proporsi_TD.insert(0,'Abstrak', dokumen)
-    output_proporsi_TD
-
-with tab8 :
-    #proporsi kata pada topik
-    distribusi_kata_topik = pd.DataFrame(lda.components_)
-    distribusi_kata_topik
+        if submit2:      
+            if met1 :
+                st.write("Metode yang Anda gunakan Adalah KNN")
+                st.write("Hasil Akurasi Data Training Menggunakan KNN sebesar : ", (100 * metode1.score(X_train, y_train)))
+                st.write("Hasil Akurasi Data Testing Menggunakan KNN sebesar : ", (100 * (metode1.score(X_test, y_test))))
+            elif met2 :
+                st.write("Metode yang Anda gunakan Adalah Naive Bayes")
+                st.write("Hasil Akurasi Data Training Menggunakan Naive Bayes sebesar : ", (100 * metode2.score(X_train, y_train)))
+                st.write("Hasil Akurasi Data Testing Menggunakan Naive Bayes sebesar : ", (100 * metode2.score(X_test, y_test)))
+            elif met3 :
+                st.write("Metode yang Anda gunakan Adalah Decesion Tree")
+                st.write("Hasil Akurasi Data Training Menggunakan Decission Tree sebesar : ", (100 * metode3.score(X_train, y_train)))
+                st.write("Hasil Akurasi Data Testing Menggunakan Decission Tree sebesar : ", (100 * metode3.score(X_test, y_test)))
+            else :
+                st.write("Anda Belum Memilih Metode")
+    # else:
+    #     st.write("Anda Belum Menentukan Jumlah Topik di Menu LDA")
