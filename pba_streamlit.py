@@ -9,7 +9,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import tree
 
-Data, Ekstraksi, lda, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA', 'Modelling'])
+Data, Ekstraksi, lda, Model = st.tabs(['Data', 'Ekstraksi Fitur', 'LDA','LDA kmeans', 'Modelling'])
 
 with Data :
    st.title("""UTS Pencarian & Penambangan Web A""")
@@ -53,6 +53,13 @@ with lda:
         U['Label']=tf['Label'].values
         U
 
+with lda kmeans:
+   from sklearn.cluster import KMeans  
+   kmeans = KMeans(n_clusters=3, random_state=0)
+   clusters = kmeans.fit_predict(U)   
+   U['Cluster'] = clusters
+   U
+   
 with Model :
     # if all :
         lda = LatentDirichletAllocation(n_components=3, doc_topic_prior=0.2, topic_word_prior=0.1,random_state=42,max_iter=1)
